@@ -10,5 +10,5 @@ Library contains the following:
 - Normality tests (kolmogorov-smirnov, shapiro wilk)
 - Chi-square test (contingency, one way tables)
 - Mann Whitney U
-
+- Confidence Interval (for the mean and difference between means)
 
