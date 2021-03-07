@@ -11,4 +11,5 @@ Library contains the following:
 - Chi-square test (Contingency, One way tables)
 - Mann Whitney U
 - Confidence Interval (for the mean and difference between means)
+- Linear Regression
 
