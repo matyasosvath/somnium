@@ -1,6 +1,20 @@
 # kaizen
 
 
+formászd át a base permutation class-t, hogy bootstrapp CI-t is adjon a test stat mellé
+
+class parametric:
+	...
+	pvalue
+	CI
+	SE
+
+class kappa:
+	test_stat
+
+
+---
+
 Statistical library for hypothesis testing and data analysis.
 
 In progress.
@@ -76,3 +90,31 @@ When a variable is non-normally distributed (that is, do not resemble a bell-sha
 
 
 
+# Kaizen
+
+Descriptive Statistics
+
+- Identify Data types for all columns
+- Store data in a .json file
+
+Univariate Data
+
+- Compute descriptive statistics based on column information
+- Visualize Variables
+- 
+
+Multivariate Data
+
+- Groupby columns based on other columns
+
+
+
+Inferential Statistics
+
+
+
+
+
+
+
+Visualization

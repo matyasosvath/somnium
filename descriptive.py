@@ -10,6 +10,15 @@ def deviation(scores):
     # Átlagos eltérés: az egyes adatok számtani átlagtól való abszolút eltéréseinek átlaga.
     return np.round(sum(abs(x - mean(scores)) for x in scores) / (len(scores)-1))
 
+def covariance(x,y):
+    # Deviations from mean
+    d_x = x - x.mean()
+    d_y = y - y.mean()
+
+    cov = np.dot(d_x,d_y)/x.shape[0] 
+    return cov
+
+
 def std(scores): 
     return 
 
