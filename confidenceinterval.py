@@ -14,22 +14,16 @@ from descriptive import covariance
 class PermutationTest:
 
     def __init__(self, *data):
-        self.data = data
+        self.data = data        
         self.actual = self.test_stat(data)
 
     def permutation(self):
-
-        
         data = [np.array(datum, dtype=float) for datum in self.data]
         elemszamok = [data[i].shape[0] for i in range(len(data))] # returns list
         csoportszam = len(elemszamok)
 
-
         pool = np.concatenate(data, axis=0)
-        #print(f"'pool':{pool}")
         pool = shuffle(pool) # shuffle pool in-place
-        #print(f'Shuffled Data: {data}')
-
 
         # need list of arrays
         data = [self.resample(pool, size=elemszamok[i]) for i in range(csoportszam)]
@@ -39,22 +33,22 @@ class PermutationTest:
         return np.random.choice(x, size=size, replace=replace)
 
     def pvalue(self, iter=1000, ci=True, ci_level=95):
-
-        # Calculate permuted distribution
+        # Permuted sampling distribution
         self.permute_dist = [self.test_stat(self.permutation()) for x in range(iter)]
 
         # P-value
         count = sum(1 for i in self.permute_dist if i >= self.actual)
         print(count)
-        # Confidence Interval
-        statistics = sorted(self.permute_dist)
-        #print(statistics)
-        # Trim endpoints of resampled CI
-        trim = ((1 - (ci_level/100))/2)
-        endpoints = int(trim*1000)
-        trimmed_ci = statistics[endpoints:-endpoints]
-        lower, upper = min(trimmed_ci), max(trimmed_ci)
 
+        # Bootstraped [bs] Confidence Interval
+        if ci:
+            statistics = sorted(self.permute_dist)
+            #print(statistics)
+            # Trim endpoints of resampled CI
+            trim = ((1 - (ci_level/100))/2)
+            endpoints = int(trim*1000)
+            trimmed_ci = statistics[endpoints:-endpoints]
+            lower, upper = min(trimmed_ci), max(trimmed_ci)
 
 
         return np.round(count/iter, 3), lower, upper
@@ -74,6 +68,44 @@ class DiffTwoMeans(PermutationTest):
         # return abs(v1.mean() - v2.mean())
 
 
+class ConfidenceInterval:
+    def __init__(self, *data, alpha=0.05, ci_level=.95):
+        self.data = data
+
+
+    def forMean(self, variance='unknown', **kwargs):
+        """
+        Confidence Interval for the Mean
+        Defaults to unknown variance, use t-distribution
+        """
+        if variance == 'unknown':
+            sem = self.data.std()/ np.sqrt(self.data.shape[0])
+            df = self.data.shape[0] - 1
+            t_cl = scipy.stats.t.interval(alpha,df)
+            lower_limit = self.data.mean() - t_cl * sem
+            upper_limit = self.data.mean() + t_cl * sem
+            return (upper_limit, lower_limit)
+
+
+        if variance == 'known':
+            var = **kwargs['var']
+            sem = var / np.sqrt(self.data.shape[0])
+            z_cl = scipy.stats.norm.ppf(ci_level)
+            lower_limit = self.data.mean() - z_cl * sem
+            upper_limit = self.data.mean() + z_cl * sem
+            return (upper_limit, lower_limit)
+
+
+            
+    def forDifferenceBetweenmeans(self):
+        x,y = self.data
+        print(x,y)
+        x_mean,y_mean = x.mean(), y.mean()
+        mean_diff = x_mean - y_mean
+
+        # Standard error (equal sample size)
+
+
 
 if __name__ == '__main__':
     x = np.random.randint(10, 15, size=30)
@@ -88,37 +120,3 @@ if __name__ == '__main__':
 
 
 
-
-
-## -------------
-
-
-# class ConfidenceInterval:
-# 	def __init__(self):
-# 		pass
-
-# 	def bootstrapped(self, data):
-# 		pass
-
-
-
-# def interval(*variables, ci=95, method='bootstrap', iters=1000):
-#     x,y = variables
-#     means = sorted(list((np.mean(np.random.choice(x, size=len(x), replace=True)) for i in range(iters))))
-#     # for i in range(iters):
-#     #     x = np.random.choice(x, size=len(x), replace=True)
-#     #     means.append(x.mean())
-    
-
-#     # Trim endpoints of resampled CI
-#     trim = ((1 - (ci/100))/2)
-#     endpoints = int(trim*1000)
-#     trimmed_ci = means[endpoints:-endpoints]
-#     lower, upper = min(trimmed_ci), max(trimmed_ci)
-
-#     print(trim, endpoints, trimmed_ci, lower, upper)
-
-#     # or 
-#     trimmed_ci = means[25:]
-
-#     return lower, upper
