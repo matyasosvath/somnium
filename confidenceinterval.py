@@ -40,6 +40,7 @@ class PermutationTest:
         count = sum(1 for i in self.permute_dist if i >= self.actual)
         print(count)
 
+        #TODO compute confidence interval using your own percentile function
         # Bootstraped [bs] Confidence Interval
         if ci:
             statistics = sorted(self.permute_dist)
