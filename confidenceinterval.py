@@ -69,6 +69,10 @@ class DiffTwoMeans(PermutationTest):
         # return abs(v1.mean() - v2.mean())
 
 
+
+#TODO: fix rounding, create more reusable code, more tests
+
+
 class ConfidenceInterval:
     def __init__(self, *data, alpha=0.05, ci_level=.95):
         self.data = data
@@ -82,13 +86,13 @@ class ConfidenceInterval:
         Defaults to unknown variance, use t-distribution
         """
         x = np.array(self.data)
-        print(x.size)
-        print(x)
+        #print(x.size)
+        #print(x)
         if variance == 'unknown':
             sem = x.std()/ np.sqrt(x.size)
             df = x.size - 1
             t_cl = stats.t.interval(self.alpha,df)[1]
-            print(sem,df,t_cl)
+            #print(sem,df,t_cl)
             lower_limit = x.mean() - t_cl * sem
             upper_limit = x.mean() + t_cl * sem
             #print(np.round(lower_limit,3), np.round(upper_limit,3))
@@ -109,7 +113,7 @@ class ConfidenceInterval:
     def forDifferenceBetweenmeans(self, equal_n = True):
         x,y = self.data
         x_n, y_n = x.shape[0], y.shape[0]
-        print(x,y)
+        #print(x,y)
         if equal_n:
             # Standard error (equal sample size)
             mean_diff = x.mean(), y.mean()
@@ -146,47 +150,51 @@ class ConfidenceInterval:
             return (np.round(lower,3), np.round(upper,3))
 
 
-        def forCorr(self):
-            """
-            1. Convert r to z'
-            2. Compute a confidence interval in terms of z'
-            3. Convert the confidence interval back to r.
-            """
+    def forCorr(self):
+        """
+        1. Convert r to z'
+        2. Compute a confidence interval in terms of z'
+        3. Convert the confidence interval back to r.
+        """
 
-            x,y = self.data
+        x,y = self.data
 
-            r = np.corrcoef(x,y)
+        r = np.corrcoef(x,y)
 
-            # Step 1
-            r_z = np.arctanh(r)
-            r_z = 0.5 * np.log(1+r/1-r)
+        # Step 1
+        r_z = np.arctanh(r)
+        r_z = 0.5 * np.log(1+r/1-r)
 
-            # Step 2
-            SE = 1/np.sqrt(x.shape[0]-3)
+        # Step 2
+        SE = 1/np.sqrt(x.shape[0]-3)
 
-            z_ci = stats.norm.ppf(1-alpha/2)
+        z_ci = stats.norm.ppf(1-self.alpha/2)
 
-            # Compute CI
-            lower = r_z - z_ci * SE
-            upper = r_z + z_ci * SE
+        # Compute CI
+        lower = r_z - z_ci * SE
+        upper = r_z + z_ci * SE
 
-            # Step 3
-            lower, upper = np.tanh((lower, upper))
-            return (lower, upper)
+        # Step 3
+        lower, upper = np.tanh((lower, upper))
+        return (lower, upper)
 
 
 
-        def forProp(self,favorable_outcome):
-            p = pd.value_counts(self.data, normalize=True)[favorable_outcome]
-            n = self.data.shape[0]
-            SE_p = np.sqrt(p*(1-p)/n)
+    def forProp(self,favorable_outcome):
+        print(self.data)
+        x = np.array(self.data)
+        print(x)
+        p = pd.value_counts(x[0], normalize=True)[favorable_outcome]
+        n = x[0].shape[0]
+        print(f'Shape {n}')
+        SE_p = np.sqrt(p*(1-p)/n)
 
-            z_ci = stats.norm.ppf(1-alpha/2)
+        z_ci = stats.norm.ppf(1-self.alpha/2)
 
-            # Compute CI (+ correction for estimating discrete distribution)
-            lower = p - z_ci * SE_p - (0.5/n) 
-            upper = p + z_ci * SE_p + (0.5/n)
-            return (lower, upper)
+        # Compute CI (+ correction for estimating discrete distribution)
+        lower = p - z_ci * SE_p - (0.5/n) 
+        upper = p + z_ci * SE_p + (0.5/n)
+        return (lower, upper)
 
 
 
@@ -195,8 +203,8 @@ import unittest
 
 class TestSum(unittest.TestCase):
 
-    z_prop = np.random.randint(0, 2, size=30)
-    print(f'Prop values {z_prop}')
+    #z_prop = np.random.randint(0, 2, size=30)
+    #print(f'Prop values {z_prop}')
 
 
     #ci_class = ConfidenceInterval(x,y)
@@ -207,17 +215,27 @@ class TestSum(unittest.TestCase):
         y = np.random.randint(10, 15, size=30)
         self.assertEqual(ConfidenceInterval(x).forMean(), (9.703, 9.763), "Should be (9.703, 9.763)")
 
-    # def test_sum_tuple(self):
-    #     self.assertEqual(sum((1, 2, 2)), 6, "Should be 6")
+    def test_forDifferenceBetweenmeans(self):
+        np.random.seed(42)
+        x = np.random.randint(5, 15, size=30)
+        y = np.random.randint(10, 15, size=30)
+        self.assertEqual(ConfidenceInterval(x,y).forMean(), (10.864, 10.903), "Should be (10.363, 10.403)")
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_forProp(self):
+        np.random.seed(42)
+        z_prop = np.random.randint(0, 2, size=30)
+        self.assertEqual(ConfidenceInterval(z_prop).forProp(favorable_outcome=0), (0.2714786270876806, 0.6618547062456528), "Soulhd be this")
+
+
+
+# if __name__ == '__main__':
+#     unittest.main()
 
 
 # if __name__ == '__main__':
 
 
-#     d = DiffTwoMeans(x,y)
+#       d = DiffTwoMeans(x,y)
 #     print(d.pvalue())
 #     print(d.actual)
 #     print(x.mean()- y.mean())
