@@ -221,6 +221,10 @@ class TestSum(unittest.TestCase):
         y = np.random.randint(10, 15, size=30)
         self.assertEqual(ConfidenceInterval(x,y).forMean(), (10.864, 10.903), "Should be (10.363, 10.403)")
 
+    def test_forCorr(self):
+        pass
+
+
     def test_forProp(self):
         np.random.seed(42)
         z_prop = np.random.randint(0, 2, size=30)
@@ -228,17 +232,8 @@ class TestSum(unittest.TestCase):
 
 
 
-# if __name__ == '__main__':
-#     unittest.main()
 
+if __name__ == '__main__':
+    pass
 
-# if __name__ == '__main__':
-
-
-#       d = DiffTwoMeans(x,y)
-#     print(d.pvalue())
-#     print(d.actual)
-#     print(x.mean()- y.mean())
-
-
-
+# create workable code from CLI
