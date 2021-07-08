@@ -10,62 +10,6 @@ from scipy.stats import shapiro, kstest
 
 # from viz import box_plot # sajat module
 
-# Check for normality
-class Normality:
-    def __init__(self):
-        self.shapiro = shapiro
-        self.kstest = kstest
-        # self.box = box_plot
-
-    def box_whiskers(self, *data):
-        pass
-        # try:
-        #     var1, var2 = data
-        #     data = var1 - var2
-        # except ValueError:
-        #     pass
-        # return self.box()
-
-    def q_q(self):
-        pass
-
-    def skewness(self):
-        pass
-
-    def kurtosis(self):
-        pass
-
-    def shapiro_wilk(self, *args: np.ndarray) -> tuple:
-
-        # another method 1
-        data = args[0]
-        if args[1]:
-            data = args[0] - args[1]
-        
-        # method 2
-        # try:
-        #     var1, var2 = data
-        #     data = var1 - var2
-        # except ValueError:
-        #     pass
-        return self.shapiro(data)
-
-    def kolmogorov_smirnov(self, *data: np.ndarray) -> tuple:
-        try:
-            var1, var2 = data
-            data = var1 - var2 # one sample t-test
-        except ValueError:
-            pass
-        return self.kstest(data, 'norm')
-
-if __name__ == '__main__':
-    np.random.seed(42)
-    data = np.random.normal(loc=6, scale=5, size=30)
-    data2 = np.random.normal(loc=5, scale=3, size=30)
-
-    n = Normality()
-    statistic, pvalue = n.shapiro_wilk(data, data2)
-    print(statistic, pvalue)
 
 
 
