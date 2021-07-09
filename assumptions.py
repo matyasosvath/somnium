@@ -3,6 +3,7 @@
 import scipy.stats
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import logging
 import unittest
 
@@ -11,6 +12,9 @@ import unittest
 # error handling
 # variable types
 # unittests
+
+def variable_type(x):
+    pass
 
 def simple_hist(x):
     # legyen egy histogram és a normal eloszlás pdf-je
@@ -29,7 +33,7 @@ def kurtosis(x):
 def skew(x):
     return pd.Series(x).skew()
 
-def normality_test(x: np.ndarray, method=shapiro-wilk) -> tuple:
+def normality_test(x: np.ndarray, method='shapiro-wilk') -> tuple:
 
     df = len(x) -1
 
@@ -60,10 +64,10 @@ def homogeneity_of_variance(data):
     f,p = ss.levene(*data)
     #df_b = 
     #df_w =
-        if p >= 0.05:
-            print(f'The homogeneity of variance assumption was not violated (F({df_b},{df_w})= {f}, p={p}).')
-        else:
-            print(f' The homogeneity of variance assumption was violated (F({df_b},{df_w})= {f}, p={p}).')
+    if p >= 0.05:
+        print(f'The homogeneity of variance assumption was not violated (F({df_b},{df_w})= {f}, p={p}).')
+    else:
+        print(f' The homogeneity of variance assumption was violated (F({df_b},{df_w})= {f}, p={p}).')
 
     return f,p
 
