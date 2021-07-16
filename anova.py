@@ -10,44 +10,51 @@ import pingouin as pg
 import assumptions as ass
 
 
-class Anova: #MultipleGroups?
-    def __init__(self, data, assumptions):
-        self.data =  data
-        self.assumptions = assumptions #TODO
 
-    def anova_one_way(self):
+
+def anova_one_way(data, assumptions: dict):
+    if assumptions is None:
+        raise ValueError('You must check for assumptions')
+    
+    if assumptions['Shapiro-Wilk']:
         f,p = f_oneway(self.data)
-        if p >0.05:
-            print(f'There were no statistically significant differences between group means as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p})").')
-        elif p <= 0.05:
+    
+    
+    if p >0.05:
+        print(f'There were no statistically significant differences between group means as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p})").')
+    elif p <= 0.05:
 
-            print(f'There was a statistically significant difference between groups as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p}). \
-                    A Tukey post hoc test revealed that the time to complete the problem was statistically significantly lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
+        print(f'There was a statistically significant difference between groups as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p}). \
+                A Tukey post hoc test revealed that the time to complete the problem was statistically significantly lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
 
-    # if elf.assumptions['homogeneity_of_variance'] == False
-    def welch_f_test(self): # Brown and Forsythe test,  Kruskal-Wallis H test
-        pass
 
-    def post_hoc(self, groups, scores):
-        if self.assumptions['homogeneity_of_variance'] == True:
-        #if homogeneity_of_variance == True:
-            tukey = pg.pairwise_tukey(data=df, 
-                                    dv='score',
-                                    between='group', 
-                                    effsize='eta-square').round(3)
-            print(tukey)
-            print(f'A Tukey post-hoc test revealed that the time to complete the problem was statistically significantly \
-                    lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). \
-                    There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
-        else:
-            gh = pg.pairwise_gameshowell(data=df, 
-                                        dv='score', # depenedent var
-                                        between='group', # independent groups
-                                        effsize='eta-square').round(3) # effect size
-            print(gh)
-            print(f'A Games-Howell post-hoc test revealed that the time to complete the problem was statistically significantly \
-                    lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). \
-                    There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
+
+
+
+# if elf.assumptions['homogeneity_of_variance'] == False
+def welch_f_test(self): # Brown and Forsythe test,  Kruskal-Wallis H test
+    pass
+
+def post_hoc(self, groups, scores):
+    if self.assumptions['homogeneity_of_variance'] == True:
+    #if homogeneity_of_variance == True:
+        tukey = pg.pairwise_tukey(data=df, 
+                                dv='score',
+                                between='group', 
+                                effsize='eta-square').round(3)
+        print(tukey)
+        print(f'A Tukey post-hoc test revealed that the time to complete the problem was statistically significantly \
+                lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). \
+                There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
+    else:
+        gh = pg.pairwise_gameshowell(data=df, 
+                                    dv='score', # depenedent var
+                                    between='group', # independent groups
+                                    effsize='eta-square').round(3) # effect size
+        print(gh)
+        print(f'A Games-Howell post-hoc test revealed that the time to complete the problem was statistically significantly \
+                lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). \
+                There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
 
 
 

@@ -58,7 +58,8 @@ def normality_test(x, method='shapiro-wilk'):
             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
         else:
             print(f'The normality of {x.name} scores was assessed. The Shapiro-Wilk tests indicated that the scores were not normally distributed (W({df}))={w}, p={p}.')
-            print(f"The variable's skew is {skw} and kurtosis is {krts}. ")
+            print(f"The variable's skew is {skw} and kurtosis is {krts}. ")       
+
         return (w, p)
 
     elif method == 'kolmogorov-szmirnov':
@@ -90,6 +91,47 @@ def homogeneity_of_variance(*data):
     return f, p
 
 
+
+
+def normality_test_decorator(x, method='shapiro-wilk'):
+    """
+    Maint to by executed as a decorator
+    Executed a separate function returns tuple (test statistic, p-value)
+
+    """
+    df = len(x) - 1
+
+    krts = kurtosis(x)
+    skw = skew(x)
+
+
+    if method == 'shapiro-wilk':
+        w, p = np.round(ss.shapiro(x),3)  # test stat, p-value
+        print('ez jo')
+        if p >= 0.05:
+            print(f"The normality of {x.name} (majd oszlopnevet behelyettesiteni) scores was assessed. The Shapiro-Wilk tests indicated that the scores were normally distributed (W({df}))={w}, p={p}.")
+            print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
+        else:
+            print(f'The normality of {x.name} scores was assessed. The Shapiro-Wilk tests indicated that the scores were not normally distributed (W({df}))={w}, p={p}.')
+            print(f"The variable's skew is {skw} and kurtosis is {krts}. ")
+        
+        assmp = dict()
+        assmp['Shapiro-Wilk Test Statistic'] = w
+        assmp['p-value'] = p         
+
+        return (w, p)
+
+    elif method == 'kolmogorov-szmirnov':
+        k, p = np.round(ss.kstest(x, 'norm'),3)
+        if p >= 0.05:
+            print(f'The normality of {x.name} scores was assessed. The Kolmogorov-Szmirnov tests indicated that the scores were normally distributed (W({df}))={k}, p={p}.')
+            print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
+        else:
+            print(f'The normality of {x.name} scores was assessed. The Kolmogorov-Szmirnov tests indicated that the scores were not normally distributed (W({df}))={k}, p={p}.')
+            print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder. ")
+        return (k, p)
+    else:
+        raise ValueError('Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional')
 
 
 
