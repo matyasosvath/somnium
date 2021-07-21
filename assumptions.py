@@ -21,11 +21,7 @@ def simple_hist(x):
     # legyen egy histogram es a normal eloszlas pdf-je
     x = pd.DataFrame(x).hist()
     plt.savefig('normality_test'.png)
-    return 
 
-
-def q_q(self):
-    pass
 
 
 def box_whiskers():

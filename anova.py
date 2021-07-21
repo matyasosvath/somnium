@@ -7,54 +7,78 @@ import pandas as pd
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import pingouin as pg
 
-import assumptions as ass
+
+
+#TODO - add assumptions decorator
+
+assmp = dict()
+
+assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.06}
+assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.06}
+assmp['Data Type'] = 'Continuous'
+assmp['Repeated'] = False
+
+
+def anova_test(df, groups: str, scores: str, assumptions: dict, effect_size='eta-square'):
+  unique_group_values = list(df[groups].unique())
+
+  # Sima np.array-ek kinyerése loop-al, a scipy-nak az kell
+  x = []
+  for i in unique_group_values:
+    x.append(df[df[groups] == i][scores].values)
+
+   # One-way ANOVA
+  f,p = f_oneway(*x)
+  #print(f,p)
+  #print(assumptions)
+  print(f'A one-way anova test was conducted to test the null hypothesis.')
+
+  # Assumptions
+  if assumptions['Shapiro-Wilk']['P-value'] > 0.05 and assumptions['Levene F-test']['P-value'] > 0.05:
+    print(f'One-way ANOVA assumptions (normality and homogenity of variance) was not violated.')
+    if p >0.05: 
+      print(f'There were no statistically significant differences between group means as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p})").')
+    else: 
+      #TODO: Tukey HSD test
+      print(f'There was a statistically significant difference between groups as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p}).')
+
+      tukey = pg.pairwise_tukey(df, dv=scores, between= groups, effsize=effect_size)
+      if (tukey['p-tukey'].values <= 0.05).any():
+        for p in tukey['p-tukey'].values:
+          print(p)
+          t = 'A Tukey post hoc test revealed that'
+          if p > 0.05: 
+            group_a_name  =tukey[tukey['p-tukey'] == p][['A', 'B']].values[0][0]
+            group_b_name  =tukey[tukey['p-tukey'] == p][['A', 'B']].values[0][1]
+            print(f"{t} there was no statistically significant difference between the {group_a_name} and {group_b_name} groups (p = {np.round(p, 3)}).")
+          elif p < 0.05: 
+            group_a_name = tukey[tukey['p-tukey'] == p][['A', 'B']].values[0][0]
+            group_b_name = tukey[tukey['p-tukey'] == p][['A', 'B']].values[0][1]
+            ef = tukey[tukey['p-tukey'] == p][effect_size].values[0] # effect-size
+            #print(ef)
+            print(f"{t} there was statistically significant difference between the {group_a_name} and {group_b_name} groups (p = {np.round(p, 3)}), with the effect size of Eta-square/Hedges-G: {np.round(ef,2)} ")
+          else:
+            raise ValueError('There is something wring with Tukey Post hoc test')
+
+  elif assumptions['Shapiro-Wilk']['P-value'] <= 0.05 and assumptions['Levene F-test']['P-value'] <= 0.05:
+    #TODO
+    raise ValueError('Both Assumptions of Normality and Homogenity of Variance is violated.')
+
+  elif assumptions['Shapiro-Wilk']['P-value'] <= 0.05:
+    #TODO
+    raise ValueError('The Assumptions of Normality is violated. Please Check if the data is transformable to normal distributions.')
+  
+  elif assumptions['Levene F-test']['P-value'] <= 0.05:
+    #TODO
+    raise ValueError('The Assumptions of Homogenity of Variance is violated. Please Check if the data is transformable to normal distributions.')
+  return (f,p)
 
 
 
 
-def anova_one_way(data, assumptions: dict):
-    if assumptions is None:
-        raise ValueError('You must check for assumptions')
-    
-    if assumptions['Shapiro-Wilk']:
-        f,p = f_oneway(self.data)
-    
-    
-    if p >0.05:
-        print(f'There were no statistically significant differences between group means as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p})").')
-    elif p <= 0.05:
-
-        print(f'There was a statistically significant difference between groups as determined by one-way ANOVA (F(df_b,df_w) = {f}, p = {p}). \
-                A Tukey post hoc test revealed that the time to complete the problem was statistically significantly lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
 
 
 
-
-
-# if elf.assumptions['homogeneity_of_variance'] == False
-def welch_f_test(self): # Brown and Forsythe test,  Kruskal-Wallis H test
-    pass
-
-def post_hoc(self, groups, scores):
-    if self.assumptions['homogeneity_of_variance'] == True:
-    #if homogeneity_of_variance == True:
-        tukey = pg.pairwise_tukey(data=df, 
-                                dv='score',
-                                between='group', 
-                                effsize='eta-square').round(3)
-        print(tukey)
-        print(f'A Tukey post-hoc test revealed that the time to complete the problem was statistically significantly \
-                lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). \
-                There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
-    else:
-        gh = pg.pairwise_gameshowell(data=df, 
-                                    dv='score', # depenedent var
-                                    between='group', # independent groups
-                                    effsize='eta-square').round(3) # effect size
-        print(gh)
-        print(f'A Games-Howell post-hoc test revealed that the time to complete the problem was statistically significantly \
-                lower after taking the intermediate (23.6 ± 3.3 min, p = .046) and advanced (23.4 ± 3.2 min, p = .034) course compared to the beginners course (27.2 ± 3.0 min). \
-                There was no statistically significant difference between the intermediate and advanced groups (p = .989).')
 
 
 
@@ -63,10 +87,6 @@ def post_hoc(self, groups, scores):
 
 
 if __name__ == '__main__':
-    df = pd.DataFrame({'score': [85, 86, 88, 75, 78, 94, 98, 79, 71, 80,
-                             91, 92, 93, 90, 97, 94, 82, 88, 95, 96,
-                             79, 78, 88, 94, 92, 85, 83, 85, 82, 81],
-                   'group': np.repeat(['a', 'b', 'c'], repeats=10)}) 
-    print(df)
-
-
+    df = pg.read_dataset('penguins')
+    print(df.head())
+    anova_test(df,'species', 'body_mass_g', assumptions=assmp)
