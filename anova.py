@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 from scipy.stats import f_oneway
 import numpy as np 
 import pandas as pd
