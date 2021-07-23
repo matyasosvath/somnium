@@ -67,26 +67,46 @@ def anova_test(df, groups: str, scores: str, assumptions: dict, effect_size='eta
                     else:
                         raise ValueError('There is something wring with Tukey Post hoc test')
     elif assumptions['Shapiro-Wilk']['P-value'] <= 0.05 and assumptions['Levene F-test']['P-value'] <= 0.05:
-        # Kruskal-Wallis goes here
+        # Kruskal-Wallis
         print(f'Both Assumptions of Normality and Homogenity of Variance is violated.')
         h,p = ss.kruskal(*data)
         rangatlagok = mean_rank(df, groups=groups, scores=scores)
         if p > 0.05:
-            print(f"A Kru")
+            print(f"A Kruskal-Wallis H test showed that there was no statistically significant difference between groups." )
         else:
             print(f"A Kruskal-Wallis H test showed that there was a statistically significant difference in scores between the different groups χ2(2) = {h}, p = {p}")
             print(f"..with a mean rank score of {rangatlagok[0][0]} of {rangatlagok[0][1]}")
             #TODO: Post hoc Test for kruskal-wallis goes here
+            print(f'A Games-Howell post hoc test was conducted for post comparison.')
+            gh = pg.pairwise_gameshowell(data=df, dv=scores, between=scores, effsize='eta-square').round(3)
+            if (gh['pval'].values <= 0.05).any():
+                for p in gh['pval'].values:
+                    #print(p)
+                    t = 'A Games-Howell post hoc test revealed that'
+                    if p > 0.05:
+                        group_a_name  =gh[gh['pval'] == p][['A', 'B']].values[0][0]
+                        group_b_name  =gh[gh['pval'] == p][['A', 'B']].values[0][1]
+                        print(f"{t} there was no statistically significant difference between the {group_a_name} and {group_b_name} groups (p = {np.round(p, 3)}).")
+                    elif p < 0.05:
+                        group_a_name = gh[gh['pval'] == p][['A', 'B']].values[0][0]
+                        group_b_name = gh[gh['pval'] == p][['A', 'B']].values[0][1]
+                        ef = gh[gh['pval'] == p][effect_size].values[0] # effect-size
+                        #print(ef)
+                        print(f"{t} there was statistically significant difference between the {group_a_name} and {group_b_name} groups (p = {np.round(p, 3)}), with the effect size of Eta-square/Hedges-G: {np.round(ef,2)} ")
+                    else:
+                        raise ValueError('There is something wring with Tukey Post hoc test')
+
         return (h,p)
         
     elif assumptions['Shapiro-Wilk']['P-value'] <= 0.05:
         #TODO
         raise ValueError('The Assumptions of Normality is violated. Please Check if the data is transformable to normal distributions.')
+        # Különben ide is Kruskal-Wallis kell
         
     elif assumptions['Levene F-test']['P-value'] <= 0.05:
         #TODO
         raise ValueError('The Assumptions of Homogenity of Variance is violated. Please Check if the data is transformable to normal distributions.')
-        
+        # Kruskall-Wallis test kell ise        
     else:
         raise ValueError("Ide nem kellene jönnöd")
     
