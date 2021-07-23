@@ -31,3 +31,5 @@ if __name__ == '__main__':
     df = pg.read_dataset('penguins')
     x = AdatTisztitas()
     x.hianyzo_ertekek(df)
+    viz.box_and_whiskers(df,'species', 'body_mass_g')
+    viz.oszlopdiagram(df, 'species', 'body_mass_g')

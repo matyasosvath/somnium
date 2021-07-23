@@ -25,6 +25,10 @@ IMAGES_PATH = os.path.join(PROJECT_ROOT_DIR, "figures")
 os.makedirs(IMAGES_PATH, exist_ok=True)
 
 
+# Figure size
+#plt.figure(figsize=(14, 8))
+
+
 def save_fig(fig_name, tight_layout=True, fig_extension="png", resolution=300):
     """
     Például save_fig('teszt') -> output teszt.png
@@ -37,22 +41,29 @@ def save_fig(fig_name, tight_layout=True, fig_extension="png", resolution=300):
     plt.savefig(path, format=fig_extension, dpi=resolution)
     return True 
 
-#def box_and_whiskers(df, x_tengely:str, y_tengely:str):
+def box_and_whiskers(df, csoportok:str, pontszamok:str):
     """
     df: dataframe
     x-tengely: egy vagy több csoport
     y-tengely: egy folytonos változó
     """
-#    sns.boxplot(x=x_tengely, y=y_tengely), data=df)
-#    save_fig('box_whiskers_diagram')
-#    return True
+    sns.boxplot(x=csoportok, y=pontszamok, data=df)
+    save_fig('box_whiskers_diagram')
+    return True
 
 
 def vonal_diagram():
     pass
 
-def oszlopdiagram():
-    pass
+def oszlopdiagram(df, csoportok: str, pontszamok: str):
+    sns.barplot(x=csoportok, 
+                y=pontszamok, 
+                data=df, 
+                estimator=np.mean, 
+                ci=95, 
+                capsize=0.05, 
+                color='lightblue')
+    save_fig('oszlopdiagram3')    
 
 def hisztogram():
     pass
