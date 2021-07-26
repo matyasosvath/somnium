@@ -158,45 +158,59 @@ def mean_rank(df, groups: str, scores: str) -> dict:
 
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
     
-    import unittest
+import unittest
 
-    class TestStringMethods(unittest.TestCase):
-        # test function to test equality of two value
-        def test_positive(self):
-            firstValue = "geeks"
-            secondValue = "geeks"
-            # error message in case if test case got failed
-            message = "First value and second value are not equal !"
-            # assertEqual() to check equality of first & second value
-            self.assertEqual(firstValue, secondValue, message)    
+
+
+assmp = dict()
     
-    import unittest
+assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.02}
+assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
+assmp['Data Type'] = 'Continuous'
+assmp['Repeated'] = False
 
-    def add_fish_to_aquarium(fish_list):
-        if len(fish_list) > 10:
-            raise ValueError("A maximum of 10 fish can be added to the aquarium")
-        return {"tank_a": fish_list}
+class TestAnova(unittest.TestCase):
+    # test function to test equality of two value
 
 
-    class TestAddFishToAquarium(unittest.TestCase):
-        def test_add_fish_to_aquarium_success(self):
-            actual = add_fish_to_aquarium(fish_list=["shark", "tuna"])
-            expected = {"tank_a": ["shark", "tuna"]}
-            self.assertEqual(actual, expected)
+
+    def test_one_way_anova(self):
+        
+        df = pg.read_dataset('penguins')
+        observed= anova_test(df, 'species','body_mass_g', assumptions=assmp)
+        expected = 0.05
+        # error message in case if test case got failed
+        message = "Message amit kiprintel"
+        # assertEqual() to check equality of first & second value
+        self.assertEqual(firstValue, secondValue, message)    
+
+import unittest
+
+def add_fish_to_aquarium(fish_list):
+    if len(fish_list) > 10:
+        raise ValueError("A maximum of 10 fish can be added to the aquarium")
+    return {"tank_a": fish_list}
+
+
+class TestAddFishToAquarium(unittest.TestCase):
+    def test_add_fish_to_aquarium_success(self):
+        actual = add_fish_to_aquarium(fish_list=["shark", "tuna"])
+        expected = {"tank_a": ["shark", "tuna"]}
+        self.assertEqual(actual, expected)
     
     
     #df = pg.read_dataset('penguins')
     #print(df.head())
 
-    #assmp = dict()
+    assmp = dict()
     
-    #assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.02}
-    #assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
-    #assmp['Data Type'] = 'Continuous'
-    #assmp['Repeated'] = False
+    assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.02}
+    assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
+    assmp['Data Type'] = 'Continuous'
+    assmp['Repeated'] = False
 
 
     #df.dropna(inplace=True)
