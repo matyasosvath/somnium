@@ -20,6 +20,16 @@ class HipotezisTesztek:
 ### TwO GROUPS
 
 
+
+### Kettő vagy több csoportra ellenőrzése
+def ketto_vagy_tobb_csoport_ellenorzese(df, groups):
+    """
+    ha kettőnél több csoport van -> return true
+    kettő csoport van ->return False
+    """
+    return df[groups].nunique() > 2
+
+
 ### MULTIPLE GROUPS
 
 def anova_one_way():
