@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import logging
 import unittest
-
+import pingouin as pg
 
 # TODO
 # error handling
@@ -79,8 +79,11 @@ def homogeneity_of_variance(*data):
     f, p = np.round(ss.levene(*data), 3)
     df_b = 0
     df_w = 0
+    # Pingouin módszere, df, scores, groups
+    #pg.homoscedasticity(data=df_anova, dv=scores, group=groups)
+
     if p >= 0.05:
-        print(f'The homogeneity of variance assumption was not violated (F({df_b},{df_w})= {f}, p={p}).')
+        print(f"Levene's test for equality of variances is not significant (F({df_b},{df_w})= {f}, p={p}).")
     else:
         print(f' The homogeneity of variance assumption was violated (F({df_b},{df_w})= {f}, p={p}).')
 

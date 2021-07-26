@@ -12,12 +12,6 @@ import vizualizacio as viz # Adat vizualizáció
 
 #TODO - add assumptions decorator
 
-assmp = dict()
-
-assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.04}
-assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
-assmp['Data Type'] = 'Continuous'
-assmp['Repeated'] = False
 
 
 def anova_test(df, groups: str, scores: str, assumptions: dict, effect_size='eta-square'):
@@ -75,6 +69,7 @@ def anova_test(df, groups: str, scores: str, assumptions: dict, effect_size='eta
             print(f"A Kruskal-Wallis H test showed that there was no statistically significant difference between groups." )
         else:
             print(f"A Kruskal-Wallis H test showed that there was a statistically significant difference in scores between the different groups χ2(2) = {h}, p = {p}")
+            #TODO for loop a rangátlagoknak
             print(f"..with a mean rank score of {rangatlagok[0][0]} of {rangatlagok[0][1]}")
             #TODO: Post hoc Test for kruskal-wallis goes here
             print(f'A Games-Howell post hoc test was conducted for post comparison.')
@@ -105,8 +100,39 @@ def anova_test(df, groups: str, scores: str, assumptions: dict, effect_size='eta
         
     elif assumptions['Levene F-test']['P-value'] <= 0.05:
         #TODO
-        raise ValueError('The Assumptions of Homogenity of Variance is violated. Please Check if the data is transformable to normal distributions.')
-        # Kruskall-Wallis test kell ise        
+        wa = pg.welch_anova(df, dv=scores, between=groups)
+        csoportok, ddof1, ddof2, f, p, np2 = list(wa.values[0])
+        if p < 0.05:
+            print(f"Welch ANOVA test revealed {p} is significant babayyy.")
+        else:
+            print(f"Welch ANO test reveled {p} is not significant.")
+        print("hello there")
+        print(df.isnull().any())
+        df[scores] = df[scores].astype('int')
+        gh = pg.pairwise_gameshowell(data=df, dv=scores, between=scores, effsize='eta-square').round(3)
+        print("hell there again bug")
+        print(gh)
+        
+        if (gh['pval'].values <= 1.05).any():
+            for p in gh['pval'].values:
+                #print(p)
+                t = 'A Games-Howell post hoc test revealed that'
+                if p > 0.05:
+                    group_a_name  =gh[gh['pval'] == p][['A', 'B']].values[0][0]
+                    group_b_name  =gh[gh['pval'] == p][['A', 'B']].values[0][1]
+                    print(f"{t} there was no statistically significant difference between the {group_a_name} and {group_b_name} groups (p = {np.round(p, 3)}).")
+                elif p < 0.05:
+                    group_a_name = gh[gh['pval'] == p][['A', 'B']].values[0][0]
+                    group_b_name = gh[gh['pval'] == p][['A', 'B']].values[0][1]
+                    ef = gh[gh['pval'] == p][effect_size].values[0] # effect-size
+                    #print(ef)
+                    print(f"{t} there was statistically significant difference between the {group_a_name} and {group_b_name} groups (p = {np.round(p, 3)}), with the effect size of Eta-square/Hedges-G: {np.round(ef,2)} ")
+                else:
+                    raise ValueError('There is something wring with Tukey Post hoc test in Wlech ANOVA test branch.')
+
+        return (f,p)
+
+        #raise ValueError('The Assumptions of Homogenity of Variance is violated. Please Check if the data is transformable to normal distributions.')
     else:
         raise ValueError("Ide nem kellene jönnöd")
     
@@ -133,9 +159,49 @@ def mean_rank(df, groups: str, scores: str) -> dict:
 
 
 if __name__ == '__main__':
-    df = pg.read_dataset('penguins')
-    print(df.head())
-    anova_test(df,'species', 'body_mass_g', assumptions=assmp)
+
+    
+    import unittest
+
+    class TestStringMethods(unittest.TestCase):
+        # test function to test equality of two value
+        def test_positive(self):
+            firstValue = "geeks"
+            secondValue = "geeks"
+            # error message in case if test case got failed
+            message = "First value and second value are not equal !"
+            # assertEqual() to check equality of first & second value
+            self.assertEqual(firstValue, secondValue, message)    
+    
+    import unittest
+
+    def add_fish_to_aquarium(fish_list):
+        if len(fish_list) > 10:
+            raise ValueError("A maximum of 10 fish can be added to the aquarium")
+        return {"tank_a": fish_list}
+
+
+    class TestAddFishToAquarium(unittest.TestCase):
+        def test_add_fish_to_aquarium_success(self):
+            actual = add_fish_to_aquarium(fish_list=["shark", "tuna"])
+            expected = {"tank_a": ["shark", "tuna"]}
+            self.assertEqual(actual, expected)
+    
+    
+    #df = pg.read_dataset('penguins')
+    #print(df.head())
+
+    #assmp = dict()
+    
+    #assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.02}
+    #assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
+    #assmp['Data Type'] = 'Continuous'
+    #assmp['Repeated'] = False
+
+
+    #df.dropna(inplace=True)
+    #df['body_mass_g'].astype('int')
+    #anova_test(df,'species', 'body_mass_g', assumptions=assmp)
 
 
 
