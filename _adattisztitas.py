@@ -10,6 +10,27 @@ import seaborn as sns
 import vizualizacio as viz
 
 
+def beolvaso(table, method='csv'):
+    try:
+        if method == 'excel':
+            adat = pd.read_excel(table)
+        if method == 'csv':
+            adat = pd.read_csv(table)
+    except IndexError:
+        pass
+        # look for all errors you ran across previously
+    except ValueError:
+        pass
+    except ImportError:
+        pass
+
+    print(adat.head())
+    return adat
+
+
+
+
+
 class AdatTisztitas:
     def __init__(self):
         pass

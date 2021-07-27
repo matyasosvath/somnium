@@ -1,1 +1,0 @@
-{"survived": "nominal", "pclass": "ordinal", "sex": "nominal", "age": "ratio-or-interval", "sibsp": "ordinal", "parch": "ordinal", "fare": "ratio-or-interval", "embarked": "ordinal", "class": "ordinal", "who": "ordinal", "adult_male": "nominal", "deck": "ordinal", "embark_town": "ordinal", "alive": "nominal", "alone": "nominal"}

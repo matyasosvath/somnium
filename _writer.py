@@ -7,12 +7,14 @@ class Writer:
         pass
 
     def generic_writer(self, interpretation, mode='a'):
-        with open('article.txt', mode=mode, encoding="utf-8") as article:
+        with open('disszertacio.txt', mode=mode, encoding="utf-8") as article:
             article.write(interpretation)
 
-
-
-
+# Define a szakdolgozat.md
+def iras(sima_text):
+    with open('szakdolgozat.md', 'a') as f:
+        f.write(sima_text)
+        f.write('\n \n')
 
 
 
@@ -39,8 +41,7 @@ class Writer:
 
 if __name__ == '__main__':
 
-    s = 'ez egy nmagyon jó hipotézis volt \n'
 
     w = Writer()
-    w.generic_writer(s)
+    w.generic_writer("Tesztelése a generic wiriter functionnek")
 
