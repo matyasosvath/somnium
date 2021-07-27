@@ -157,6 +157,58 @@ def mean_rank(df, groups: str, scores: str) -> dict:
 
 
 
+class Korrelacio:
+    def __init__(self, df):
+        self.df = df
+
+
+        self.assumptions = dict()
+        self.adatok = None
+
+    def adatok_kinyerese(self, *args):
+        """
+        Itt kell kinyernem az adatokat akár így megadva: df, groups, scores. Akár így df[['oszlop1', 'oszlop2']].
+        Hiszen a drága pszichológusok mindkettő fél képpen elemzik az adatokat.
+
+
+        Returns multiple series
+        """
+        adatok = 0
+
+        self.adatok = adatok
+        return adatok
+
+    def run_csoportok(self):
+        self.assumptions = self.test_for_assumptions(self.adatok, method="correlation")
+
+        self.scatter_plot(self.adatok)
+
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if __name__ == '__main__':
 

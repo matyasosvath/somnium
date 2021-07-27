@@ -1,20 +1,13 @@
 #!/usr/bin/env python3
 
 
-
-class Writer:
+class Luhmann:
     def __init__(self):
         pass
 
-    def generic_writer(self, interpretation, mode='a'):
+    def write(self, text, mode='a'):
         with open('disszertacio.txt', mode=mode, encoding="utf-8") as article:
-            article.write(interpretation)
-
-# Define a szakdolgozat.md
-def iras(sima_text):
-    with open('szakdolgozat.md', 'a') as f:
-        f.write(sima_text)
-        f.write('\n \n')
+            article.write(text)
 
 
 
@@ -41,7 +34,6 @@ def iras(sima_text):
 
 if __name__ == '__main__':
 
-
-    w = Writer()
-    w.generic_writer("Tesztelése a generic wiriter functionnek")
+    zettel = Luhmann()
+    zettel.write("Tesztelése a generic wiriter functionnek")
 

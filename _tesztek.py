@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 
-
 import numpy as np
 import pandas as pd
-import logging
-
-
-
-
-import numpy as np 
-import pandas as pd
 from sklearn.utils import shuffle
+
+
+import logging
 
 
 #######################
@@ -130,8 +125,6 @@ def check(col, mit_akarok_csekkolni, hol):
 
 
 
-
-
 # Descriptive Statistics
 
 ## Interval-ratio scale
@@ -192,6 +185,8 @@ def descriptive_nominal(col):
 
 
 
+#################
+#################
 #################
 
 
