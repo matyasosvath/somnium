@@ -7,7 +7,12 @@ from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import pingouin as pg
 import scipy.stats as ss
 
+import logging
+
+
 #import vizualizacio as viz # Adat vizualizáció
+
+logger = logging.getLogger()
 
 
 #TODO - add assumptions decorator
@@ -200,6 +205,8 @@ class Korrelacio(HipotezisTeszt, Assumptions, Vizualizacio, AdatTisztitas):
         self.adatok = None # multiple pd.series
 
         self.eredmenyek = None
+
+        logger.info("Korrelacio class successfully initiated!")
 
     def adatok_kinyerese(self, df, groups, scores)):
         """
