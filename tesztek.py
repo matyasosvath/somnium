@@ -33,15 +33,32 @@ class HipotezisTesztek:
         pearson = pg.corr(x, y, tail='two-sided', method='pearson').round(3)
         n,r,ci95,p,bf10, power =  pearson.values[0]
 
-        print('Pearson correlation was done ...')
+        pos_neg = 'postive' if r>0 else 'negative'
+
+        print(f'The relationship between {x.name} and {y.name} was assessed.')
+        
+        if p <= 0.05:
+            print(f"A Pearson correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+        else:
+            print(f"A Pearson correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+
         return r,p, ci95
 
     
     def spearman(self,x,y):
         spearman = pg.corr(x, y, tail='two-sided', method='spearman').round(3)
         n, r,ci95,p, power = spearman.values[0]
+        
+        pos_neg = 'postive' if r>0 else 'negative'
+
         # Report
-        print('Spearman correlation was done ...')
+        print(f'The relationship between {x.name} and {y.name} was assessed.')
+        
+        if p <= 0.05:
+            print(f"Spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+        else:
+            print(f"Spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+
         return r,p, ci95
         #return pg.corr(x, y, tail='two-sided', method='spearman').round(3)
 
@@ -63,8 +80,8 @@ def shapiro_wilk_test(x):
 
     w, p = np.round(ss.shapiro(x),3)  # test stat, p-value
 
-    kurt = kurtosis(x)
-    skw = skew(x)
+    kurtosis(x)
+    skew(x)
 
     if p >= 0.05:
         print(f"The normality of {x.name} scores was assessed. The Shapiro-Wilk tests indicated that the scores were normally distributed (W({df}))={w}, p={p}.")
@@ -80,8 +97,8 @@ def kolmogorov_szmirnov_teszt(x):
 
     k, p = np.round(ss.kstest(x, 'norm'), 3)
 
-    kurt = kurtosis(x)
-    skw = skew(x)
+    kurtosis(x)
+    skew(x)
 
     if p >= 0.05:
         print(f'The normality of {x.name} scores was assessed. The Kolmogorov-smirnov tests indicated that the scores were normally distributed (W({df}))={k}, p={p}.')
@@ -138,7 +155,6 @@ def normality_test(x, method='shapiro-wilk'):
     else:
         raise ValueError(
             'Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional. Mit keresel itt?')
-
 
 
 
