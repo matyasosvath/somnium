@@ -1,22 +1,18 @@
 #!/usr/bin/env python
 
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve
+
+
 
 import os
 import logging
 
-
 logger = logging.getLogger()
 
-stream_handler = logging.StreamHandler() # messages show up in terminal
-formatter = logging.Formatter('%(asctime)s %(levelname)s :: %(message)s') # format the message for the terminal output
-
-stream_handler.setFormatter(formatter) # add formatter to the stream handler
-stream_handler.setLevel(logging.INFO)
 
 
 # Where to save the figures
@@ -26,7 +22,7 @@ os.makedirs(IMAGES_PATH, exist_ok=True)
 
 
 # Figure size
-#plt.figure(figsize=(14, 8))
+plt.figure(figsize=(14, 8))
 
 
 def save_fig(fig_name, tight_layout=True, fig_extension="png", resolution=300):
@@ -35,7 +31,7 @@ def save_fig(fig_name, tight_layout=True, fig_extension="png", resolution=300):
     """
     path = os.path.join(IMAGES_PATH, fig_name + "." + fig_extension)
     #path = fig_id + "." + fig_extension
-    logger.info("Saving figure", fig_name)
+    logger.info("Saving figure")
     if tight_layout:
         plt.tight_layout()
     plt.savefig(path, format=fig_extension, dpi=resolution)
@@ -53,6 +49,7 @@ def box_and_whiskers(df, csoportok:str, pontszamok:str):
 
 
 def vonal_diagram():
+    # line plot
     pass
 
 def oszlopdiagram(df, csoportok: str, pontszamok: str):
@@ -66,15 +63,23 @@ def oszlopdiagram(df, csoportok: str, pontszamok: str):
     save_fig('oszlopdiagram3')    
 
 def hisztogram():
+    #hist
     pass
 
+def scatter_plot(df, x,y):
+    sns.scatterplot(x=x, y=y, data=df)
+    save_fig('scatter_plot_diagram')
+
+def normality_plot(x):
+    x.plot.kde()
+    save_fig('normality_plot')
 
 
 
 
-
-from sklearn.metrics import roc_curve
-
+######################
+## Machine learning ##
+######################
 
 def plot_roc_curve(y_train,y_scroes, label=None):
     # Caculate

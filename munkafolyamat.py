@@ -1,18 +1,133 @@
 #!/usr/bin/env python
 
-from scipy.stats import f_oneway
 import numpy as np 
 import pandas as pd
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import pingouin as pg
 import scipy.stats as ss
 
 import logging
 
-
-#import vizualizacio as viz # Adat vizualizáció
-
 logger = logging.getLogger()
+
+logger.setLevel(logging.INFO)
+
+stream_handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s %(levelname)s :: %(message)s')
+stream_handler.setFormatter(formatter)
+stream_handler.setLevel(logging.INFO)
+
+logger.addHandler(stream_handler)
+
+
+# Saját modulok
+from _vizualizacio import *
+from tesztek import *
+from adattisztitas import *
+
+
+##############################
+######## ASSUMPTIONS #########
+##############################
+
+
+class Assumptions:
+    def __init__(self) -> None:
+        pass
+
+    logger.info("Assumptions successfully initialized")
+
+
+    def test_for_assumptions(self, x, method):
+
+      assmp = dict()
+
+      if method == "correlation":
+        # Mi kell ide?
+        # normality plot (kész)
+        # normalitás teszt (kész)
+        # outliers
+
+        
+        # Visualization
+        # A normality_test() function-ben van
+        #normality_plot(x)
+
+        
+        # Tests
+        assmp = normality_test(x) #TODO bivariate normality
+
+        return assmp
+
+      elif method == "two groups":
+        pass
+      
+      elif method == "three or more groups":
+        pass
+      
+      elif method == "regression":
+        pass
+
+      else:
+        raise ValueError
+
+
+
+
+##############################
+######## KORRELÁCIÓ ##########
+##############################
+
+
+# Munkafolyamat.py
+class Korrelacio(Assumptions, HipotezisTesztek):
+  def __init__(self, x,y):
+    self.x = x
+    self.y = y
+
+
+    self.assumptions = self.test_for_assumptions(self.x, method="correlation")
+
+    logger.info("Korrelacio successfully initialized")
+
+
+  def run(self):         
+    scatter_plot(df, x=self.x,y=self.y)
+    #print(self.assumptions)
+
+    if self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] > 0.05:
+      print('Pearson')
+      print(self.pearson(self.x,self.y))
+
+    elif self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] <= 0.05:
+      print('Spearman')
+      print(self.spearman(self.x,self.y))
+    
+    else:
+      raise ValueError
+
+
+if __name__ == '__main__':
+    import pingouin as pg
+    df = pg.read_dataset('penguins')
+    df.dropna(inplace=True)
+
+    a = Assumptions()
+    a.test_for_assumptions(df['body_mass_g'], method="correlation")
+
+    korr = Korrelacio(df['body_mass_g'], df['bill_depth_mm'])
+    #korr.assumptions
+    korr.run()
+
+
+
+
+
+
+
+
+############# KORÁBBI ELEMZÉSEK
+
+
 
 
 #TODO - add assumptions decorator
@@ -163,101 +278,67 @@ logger = logging.getLogger()
 ######## KORRELÁCIÓ ##########
 ##############################
 
-class HipotezisTeszt:
-    """
-    Az összes teszt itt legyen
-    """
-    def __init__(self) -> None:
-        pass
 
-
-class Assumptions:
-    def __init__(self) -> None:
-        pass
-
-    def test_assumptions(self, adatok, method):
-        print(adatok, method)
-
-class Vizualizacio:
-    def __init__(self) -> None:
-        pass
-
-class AdatTisztitas:
-    def __init__(self) -> None:
-        pass
-
-
-
-# Base Class a folyamatoknak
-# class BaseClass(HipotezisTeszt, Assumptions, Vizualizacio, AdatTisztitas):
+# class Korrelacio(HipotezisTeszt, Assumptions, Vizualizacio, AdatTisztitas):
 #     def __init__(self):
-#         pass
-    
-#     def adatok_kinyerese(self, *args): # hol legyen?
-#         pass
+
+#         #self.assumptions = dict()
+#         self.adatok = None # multiple pd.series
+
+#         self.eredmenyek = None
+
+#         logger.info("Korrelacio class successfully initiated!")
+
+#     def adatok_kinyerese(self, df, groups, scores)):
+#         """
+#         Adatok kinyerése akár így van megadva: df, groups, scores. Akár így df[['oszlop1', 'oszlop2']].
+#         Hiszen a drága pszichológusok mindkettő fél képpen elemzik az adatokat.
+
+#         ELŐSZÖR EGYIKRE CSINÁLD MEG!!!!
+
+#         Returns: multiple pd.series.
+#         """
+#         # Sima np.array-ek kinyerése loop-al, a scipy-nak az kell
 
 
-
-class Korrelacio(HipotezisTeszt, Assumptions, Vizualizacio, AdatTisztitas):
-    def __init__(self):
-
-        #self.assumptions = dict()
-        self.adatok = None # multiple pd.series
-
-        self.eredmenyek = None
-
-        logger.info("Korrelacio class successfully initiated!")
-
-    def adatok_kinyerese(self, df, groups, scores)):
-        """
-        Adatok kinyerése akár így van megadva: df, groups, scores. Akár így df[['oszlop1', 'oszlop2']].
-        Hiszen a drága pszichológusok mindkettő fél képpen elemzik az adatokat.
-
-        ELŐSZÖR EGYIKRE CSINÁLD MEG!!!!
-
-        Returns: multiple pd.series.
-        """
-        # Sima np.array-ek kinyerése loop-al, a scipy-nak az kell
-
-
-        unique_group_values = list(df[groups].unique())
-        self.adatok = []
-        for i in unique_group_values:
-            self.adatok.append(df[df[groups] == i][scores].values)
+#         unique_group_values = list(df[groups].unique())
+#         self.adatok = []
+#         for i in unique_group_values:
+#             self.adatok.append(df[df[groups] == i][scores].values)
         
-        # do some func()
+#         # do some func()
 
-        return self.adatok
+#         return self.adatok
 
-    def run(self, df, groups, scores):
-        self.adatok = self.adatok_kinyerese(df, groups, scores)
+#     def run(self, df, groups, scores):
+#         self.adatok = self.adatok_kinyerese(df, groups, scores)
 
-        self.assumptions = self.test_assumptions(self.adatok, method="correlation")
-        # egyik funkciója beleírni a .txt-ba, másik paramterátadás
+#         self.assumptions = self.test_assumptions(self.adatok, method="correlation")
+#         # egyik funkciója beleírni a .txt-ba, másik paramterátadás
 
-        self.scatter_plot(self.adatok) # csak egy kép mentése a scatter_plotokról, q-q plotokról
+#         self.scatter_plot(self.adatok) # csak egy kép mentése a scatter_plotokról, q-q plotokról
 
-        if self.assumptions is not None:
-            if self.assumptions['Bivariate Normality']: # no outliers and normal distribution
-                self.pearson_korrelacio(self.adatok)
+#         if self.assumptions is not None:
+#             if self.assumptions['Bivariate Normality']: # no outliers and normal distribution
+#                 self.pearson_korrelacio(self.adatok)
             
-            elif self.assumptions['Bivariate Normality'] == False:
+#             elif self.assumptions['Bivariate Normality'] == False:
 
-                self.spearman_korrelacio(self.adatok)
+#                 self.spearman_korrelacio(self.adatok)
 
-                if self.assumptions["Univariate Outliers"]:
-                    self.biweight_midcorrelation(self.adatok)
-                    self.percentage_bend_correlation(self.adatok)
+#                 if self.assumptions["Univariate Outliers"]:
+#                     self.biweight_midcorrelation(self.adatok)
+#                     self.percentage_bend_correlation(self.adatok)
                     
-                elif self.assumptions["Bivariate Outliers"]:
-                    self.skipped_correlation(self.adatok)
-                    self.shepherd_correlation(self.adatok)                    
+#                 elif self.assumptions["Bivariate Outliers"]:
+#                     self.skipped_correlation(self.adatok)
+#                     self.shepherd_correlation(self.adatok)                    
                     
-                else:
-                    raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
+#                 else:
+#                     raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
 
-            else:
-                raise ValueError("Something wrong with Correlacio class, self.assumptions.")
+#             else:
+#                 raise ValueError("Something wrong with Correlacio class, self.assumptions.")
 
                         
 
@@ -267,91 +348,3 @@ class Korrelacio(HipotezisTeszt, Assumptions, Vizualizacio, AdatTisztitas):
 # nem kell minden egyszerre mert overwhelming
         
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if __name__ == '__main__':
-
-    
-import unittest
-
-
-
-assmp = dict()
-    
-assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.02}
-assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
-assmp['Data Type'] = 'Continuous'
-assmp['Repeated'] = False
-
-class TestAnova(unittest.TestCase):
-    # test function to test equality of two value
-
-
-
-    def test_one_way_anova(self):
-        
-        df = pg.read_dataset('penguins')
-        observed= anova_test(df, 'species','body_mass_g', assumptions=assmp)
-        expected = 0.05
-        # error message in case if test case got failed
-        message = "Message amit kiprintel"
-        # assertEqual() to check equality of first & second value
-        self.assertEqual(firstValue, secondValue, message)    
-
-import unittest
-
-def add_fish_to_aquarium(fish_list):
-    if len(fish_list) > 10:
-        raise ValueError("A maximum of 10 fish can be added to the aquarium")
-    return {"tank_a": fish_list}
-
-
-class TestAddFishToAquarium(unittest.TestCase):
-    def test_add_fish_to_aquarium_success(self):
-        actual = add_fish_to_aquarium(fish_list=["shark", "tuna"])
-        expected = {"tank_a": ["shark", "tuna"]}
-        self.assertEqual(actual, expected)
-    
-    
-    #df = pg.read_dataset('penguins')
-    #print(df.head())
-
-    assmp = dict()
-    
-    assmp['Shapiro-Wilk'] = {'Test Stat': 4.55, 'P-value': 0.02}
-    assmp['Levene F-test'] = {'Test Stat': 4.55, 'P-value': 0.04}
-    assmp['Data Type'] = 'Continuous'
-    assmp['Repeated'] = False
-
-
-    #df.dropna(inplace=True)
-    #df['body_mass_g'].astype('int')
-    #anova_test(df,'species', 'body_mass_g', assumptions=assmp)
-
-
-
-
-

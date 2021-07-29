@@ -3,12 +3,17 @@
 
 import numpy as np
 import pandas as pd
-import logging
-import pingouin
+import pingouin as pg
 import seaborn as sns
 
-import vizualizacio as viz
+import logging
 
+
+## Sajat modulok
+from _vizualizacio import *
+
+
+logger = logging.getLogger()
 
 def beolvaso(table, method='csv'):
     try:
@@ -35,12 +40,15 @@ class AdatTisztitas:
     def __init__(self):
         pass
 
+    logger.info("Adattisztitas successfully initialized")
+
+
     def hianyzo_ertekek(self, df):
         sns_plot = sns.heatmap(df.isnull(),
             yticklabels=False,
             cbar=False,
             cmap='viridis')
-        viz.save_fig('hianyzo_ertekek', tight_layout=True)
+        save_fig('hianyzo_ertekek', tight_layout=True)
 
 
 
@@ -52,5 +60,5 @@ if __name__ == '__main__':
     df = pg.read_dataset('penguins')
     x = AdatTisztitas()
     x.hianyzo_ertekek(df)
-    viz.box_and_whiskers(df,'species', 'body_mass_g')
-    viz.oszlopdiagram(df, 'species', 'body_mass_g')
+    box_and_whiskers(df,'species', 'body_mass_g')
+    oszlopdiagram(df, 'species', 'body_mass_g')
