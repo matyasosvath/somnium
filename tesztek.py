@@ -5,7 +5,7 @@ import pandas as pd
 import pingouin as pg
 import scipy.stats as ss
 
-from sklearn.utils import shuffle
+#from sklearn.utils import shuffle
 
 
 import logging
@@ -33,7 +33,7 @@ class HipotezisTesztek:
         pearson = pg.corr(x, y, tail='two-sided', method='pearson').round(3)
         n,r,ci95,p,bf10, power =  pearson.values[0]
 
-        #print('Pearson correlation was done ...')
+        print('Pearson correlation was done ...')
         return r,p, ci95
 
     
@@ -41,7 +41,7 @@ class HipotezisTesztek:
         spearman = pg.corr(x, y, tail='two-sided', method='spearman').round(3)
         n, r,ci95,p, power = spearman.values[0]
         # Report
-        #print('Spearman correlation was done ...')
+        print('Spearman correlation was done ...')
         return r,p, ci95
         #return pg.corr(x, y, tail='two-sided', method='spearman').round(3)
 
@@ -92,40 +92,48 @@ def kolmogorov_szmirnov_teszt(x):
 
     return (k, p)
 
-
 def multivariate_normality_test(x, alpha=0.05):
     hz_test_stat , p, is_normal = pg.multivariate_normality(x, alpha=alpha)
     return (hz_test_stat, p)
-
 
 def normality_test(x, method='shapiro-wilk'):
     """
     Shapiro-Wilk or Kolmogorov Smirnov test
     Returns tuple (test statistic, p-value)
     """
-    #TODO CSináld meg hogy akkor is jó leygen ha toöbb series-t akarok fogadni
+    #TODO Csináld meg hogy akkor is jó leygen ha toöbb series-t akarok fogadni
     #if x.shape[1] >= 2:
     #  print('hello')
     #  kurtosises = x.kurtosis()
     #  skews = x.skew()
 
-    # Viz
-    normality_plot(x)
+    # Vizualizacio
+    try:
+        normality_plot(x)
+    except Exception:
+        pass
 
     # Tests
     if method == 'shapiro-wilk':
-      w,p = shapiro_wilk_test(x)
+        w,p = shapiro_wilk_test(x)
 
-      norm_test_dict = {'Normality Test': {'Shapiro-Wilk': {'Test Statistic': w, 'P-value': p}}}
+        norm_test_dict = {'Normality Test': {'Shapiro-Wilk': {'Test Statistic': w, 'P-value': p}}}
 
-      return norm_test_dict
+        return norm_test_dict
 
     elif method == 'kolmogorov-szmirnov':
-      k,p = kolmogorov_szmirnov_teszt(x)
+        k,p = kolmogorov_szmirnov_teszt(x)
       
-      norm_test_dict = {'Normality Test': {'Kolmogorov-Szmirnov': {'Test Statistic': k, 'P-value': p}}}
+        norm_test_dict = {'Normality Test': {'Kolmogorov-Szmirnov': {'Test Statistic': k, 'P-value': p}}}
 
-      return norm_test_dict
+        return norm_test_dict
+
+    elif method == 'multivariate':
+        hz_test_stat, p = multivariate_normality_test(x)
+        
+        norm_test_dict = {'Normality Test': {'Henze-Zirkler': {'Test Statistic': hz_test_stat, 'P-value': p}}}
+
+        return norm_test_dict
 
     else:
         raise ValueError(

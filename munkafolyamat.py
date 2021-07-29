@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from math import exp
 import numpy as np 
 import pandas as pd
 import pingouin as pg
@@ -44,10 +45,10 @@ class Assumptions:
             # Mi kell ide?
             # normality plot (kész)
             # normalitás teszt (kész)
-            # outliers
+            # outliers (kész a multivariate normality test miatt)
         
             # Tests
-            assmp = normality_test(x) #TODO bivariate normality
+            assmp = normality_test(x, method='multivariate')
 
             return assmp
 
@@ -67,21 +68,20 @@ class Assumptions:
             raise ValueError
 
 
-
-
 ##############################
 ######## KORRELÁCIÓ ##########
 ##############################
 
 
-# Munkafolyamat.py
 class Korrelacio(Assumptions, HipotezisTesztek):
   def __init__(self, x,y):
     self.x = x
     self.y = y
 
+    self.data = pd.concat([x,y], axis=1) # két külön series-ből egy datafram legyen a "multivariate test" kedvéért
 
-    self.assumptions = self.test_for_assumptions(self.x, method="correlation")
+
+    self.assumptions = self.test_for_assumptions(self.data, method="correlation")
 
     logger.info("Korrelacio successfully initialized")
 
@@ -89,17 +89,50 @@ class Korrelacio(Assumptions, HipotezisTesztek):
   def run(self):         
     scatter_plot(df, x=self.x,y=self.y)
     #print(self.assumptions)
+ 
+    if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05:
+        print('Multivarite assumptions')
+        print('Pearson')
+        print(self.pearson(self.x,self.y))
 
-    if self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] > 0.05:
-      print('Pearson')
-      print(self.pearson(self.x,self.y))
+    elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05:
+        print('Spearman')
+        print(self.spearman(self.x,self.y))
+        
+        #TODO 
+        # try:
+        #     if self.assumptions["Univariate Outliers"]:
+        #         self.biweight_midcorrelation(self.adatok)
+        #         self.percentage_bend_correlation(self.adatok)
+                    
+        #     elif self.assumptions["Bivariate Outliers"]:
+        #         self.skipped_correlation(self.adatok)
+        #         self.shepherd_correlation(self.adatok)                    
+                    
+        #     else:
+        #         raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
+        # except Exception:
+        #     pass
 
-    elif self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] <= 0.05:
-      print('Spearman')
-      print(self.spearman(self.x,self.y))
-    
     else:
-      raise ValueError
+        raise ValueError
+
+
+    # try:
+    #     if self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] > 0.05:
+    #         print('Pearson')
+    #         print(self.pearson(self.x,self.y))
+
+    #     elif self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] <= 0.05:
+    #         print('Spearman')
+    #         print(self.spearman(self.x,self.y))
+        
+    #     else:
+    #         raise ValueError
+
+    # except:
+    #     pass
+
 
 
 if __name__ == '__main__':
@@ -108,7 +141,7 @@ if __name__ == '__main__':
     df.dropna(inplace=True)
 
     a = Assumptions()
-    a.test_for_assumptions(df['body_mass_g'], method="correlation")
+    # a.test_for_assumptions(df['body_mass_g'], method="correlation")
 
     korr = Korrelacio(df['body_mass_g'], df['bill_depth_mm'])
     #korr.assumptions
