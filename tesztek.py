@@ -33,7 +33,7 @@ class HipotezisTesztek:
         pearson = pg.corr(x, y, tail='two-sided', method='pearson').round(3)
         n,r,ci95,p,bf10, power =  pearson.values[0]
 
-        pos_neg = 'postive' if r>0 else 'negative'
+        pos_neg = 'postively' if r>0 else 'negatively'
 
         print(f'The relationship between {x.name} and {y.name} was assessed.')
         
@@ -49,7 +49,7 @@ class HipotezisTesztek:
         spearman = pg.corr(x, y, tail='two-sided', method='spearman').round(3)
         n, r,ci95,p, power = spearman.values[0]
         
-        pos_neg = 'postive' if r>0 else 'negative'
+        pos_neg = 'postively' if r>0 else 'negatively'
 
         # Report
         print(f'The relationship between {x.name} and {y.name} was assessed.')
