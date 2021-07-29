@@ -22,8 +22,6 @@ from _vizualizacio import *
 #######################
 
 
-
-
 class HipotezisTesztek:
 
     def __init__(self):
@@ -93,6 +91,12 @@ def kolmogorov_szmirnov_teszt(x):
         # You can find the histogram of the variable in this folder.
 
     return (k, p)
+
+
+def multivariate_normality_test(x, alpha=0.05):
+    hz_test_stat , p, is_normal = pg.multivariate_normality(x, alpha=alpha)
+    return (hz_test_stat, p)
+
 
 def normality_test(x, method='shapiro-wilk'):
     """

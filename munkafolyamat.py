@@ -38,37 +38,33 @@ class Assumptions:
 
 
     def test_for_assumptions(self, x, method):
-
-      assmp = dict()
-
-      if method == "correlation":
-        # Mi kell ide?
-        # normality plot (kész)
-        # normalitás teszt (kész)
-        # outliers
-
+        assmp = dict()
         
-        # Visualization
-        # A normality_test() function-ben van
-        #normality_plot(x)
-
+        if method == "correlation":
+            # Mi kell ide?
+            # normality plot (kész)
+            # normalitás teszt (kész)
+            # outliers
         
-        # Tests
-        assmp = normality_test(x) #TODO bivariate normality
+            # Tests
+            assmp = normality_test(x) #TODO bivariate normality
 
-        return assmp
+            return assmp
 
-      elif method == "two groups":
-        pass
+        elif method == "two groups":
+            pass
       
-      elif method == "three or more groups":
-        pass
+        elif method == "three or more groups":
+            pass
       
-      elif method == "regression":
-        pass
+        elif method == "regression":
+            pass
 
-      else:
-        raise ValueError
+        elif method == "categorical":
+            pass
+
+        else:
+            raise ValueError
 
 
 
@@ -282,12 +278,10 @@ if __name__ == '__main__':
 # class Korrelacio(HipotezisTeszt, Assumptions, Vizualizacio, AdatTisztitas):
 #     def __init__(self):
 
-#         #self.assumptions = dict()
 #         self.adatok = None # multiple pd.series
 
 #         self.eredmenyek = None
 
-#         logger.info("Korrelacio class successfully initiated!")
 
 #     def adatok_kinyerese(self, df, groups, scores)):
 #         """

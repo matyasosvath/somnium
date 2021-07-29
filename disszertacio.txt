@@ -1,1 +1,0 @@
-Tesztelése a generic wiriter functionnek
