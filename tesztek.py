@@ -292,7 +292,7 @@ def remove_univariate_outliers(x):
 
 ## MULTIVARIATE OUTLIERS
 
-def mahalanobis_distance(x=None, data=None, cov=None):
+def mahalanobis_distance(x=None, data=None):
     """
     Mahalanobis Distance
 
@@ -302,15 +302,25 @@ def mahalanobis_distance(x=None, data=None, cov=None):
     x    : vector or matrix of data with, say, p columns.
     data : ndarray of the distribution from which Mahalanobis distance of each observation of x is to be computed.
     cov  : covariance matrix (p x p) of the distribution. If None, will be computed from data.
+
+    A p-value that is less than .001 is considered to be an outlier.
+    
+    Returns data where the p-value is less than 0.001.
     """
 
-    x_minus_mu = x - np.mean(data)
-    if not cov:
-        cov = np.cov(data.values.T)
-    inv_covmat = sp.linalg.inv(cov)
-    left_term = np.dot(x_minus_mu, inv_covmat)
-    mahal = np.dot(left_term, x_minus_mu.T)
-    return mahal.diagonal()
+    degress_of_freedom = data.shape[1] - 1
+    x = data
+    x_mu = x - np.mean(data)
+
+    cov = np.cov(data.values.T)
+    inv_covmat = np.linalg.inv(cov)
+    left = np.dot(x_mu, inv_covmat)
+    mahal = np.dot(left, x_mu.T)
+    
+    x['mahalanobis'] = mahal.diagonal()
+    x['p'] = 1 - chi2.cdf(x['mahalanobis'], degress_of_freedom)
+    x = x[x['p'] > 0.001]
+    return x.drop(['mahalanobis', 'p'], axis=1)
 
 
 
