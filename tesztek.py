@@ -61,7 +61,98 @@ class HipotezisTesztek:
 
         return r,p, ci95
         #return pg.corr(x, y, tail='two-sided', method='spearman').round(3)
+    def biweight_correlation(self, x,y):
+        """
+        Biweight midcorrelation (robust)
 
+        """
+        
+        n,r,ci95, p, power = pg.corr(x, y, method="bicor").round(3)
+  
+        pos_neg = 'postively' if int(r)>0 else 'negatively'
+
+        # Report
+        print(f"The relationship between {x.name} and {y.name} was assessed with biweight midcorrelation (robust).")
+
+        if p <= 0.05:
+            print(f"Biweight midcorrelation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+        else:
+            print(f"Biweight midcorrelation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+
+        return r,p, ci95
+
+
+    def percentage_bend_correlation(self,x,y):
+        """
+        Percentage bend correlation (robust)
+
+        """
+        
+        n,r,ci95, p, power = pg.corr(x, y, method="bicor").round(3)
+  
+        pos_neg = 'postively' if int(r)>0 else 'negatively'
+
+        # Report
+        print(f"The relationship between {x.name} and {y.name} was assessed with Percentage bend correlation (robust).")
+
+        if p <= 0.05:
+            print(f"Percentage bend correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+        else:
+            print(f"Percentage bend correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+
+        return r,p, ci95
+
+
+    def shepherd_pi_correlation(self,x,y):
+        """
+        Shepherd’s pi correlation (robust)
+        """
+        
+        n,outliers,r,ci95, p, power = pg.corr(x, y, method="shepherd").round(3)
+  
+        pos_neg = 'postively' if int(r)>0 else 'negatively'
+
+        # Report
+        print(f"The relationship between {x.name} and {y.name} was assessed with Shepherd’s pi correlation (")
+
+        if p <= 0.05:
+            print(f"Shepherd’s pi correlation showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+        else:
+            print(f"Shepherd’s pi correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+
+        return r,p, ci95
+
+
+    def skipped_spearman_correlation(self,x,y):
+        """
+        Skipped spearman correlation (robust)
+        """
+        
+        n,outliers,r,ci95, p, power = pg.corr(x, y, method="skipped").round(3)
+  
+        pos_neg = 'postively' if int(r)>0 else 'negatively'
+
+        # Report
+        print(f"The relationship between {x.name} and {y.name} was assessed with Skipped spearman correlation.")
+
+        if p <= 0.05:
+            print(f"Skipped spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+        else:
+            print(f"Skipped spearman correlation showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
+
+        return r,p, ci95
+
+
+
+
+def mean(x):
+    return x.mean()
+
+def median(x):
+    return x.median()
+
+def median_absolute_deviation(x):
+    return ss.median_absolute_deviation(x)
 
 
 
@@ -110,7 +201,20 @@ def kolmogorov_szmirnov_teszt(x):
     return (k, p)
 
 def multivariate_normality_test(x, alpha=0.05):
+
     hz_test_stat , p, is_normal = pg.multivariate_normality(x, alpha=alpha)
+
+
+    df = x.shape[0] - 1
+
+    if p >= 0.05:
+        print(f'The normality of {x.columns[0]} and {x.columns[1]} was assessed (test: {list(x.columns)}). Henze-Zirkler multivariate normality test indicated that the scores were normally distributed (W({df}))={hz_test_stat}, p={p}.')
+        # You can find the histogram of the variable in this folder.")
+    else:
+        print(f'The normality of {x.columns[0]} and {x.columns[1]} was assessed (test: {list(x.columns)}). Henze-Zirkler multivariate normality test indicated that the scores were not normally distributed (W({df}))={hz_test_stat}, p={p}.')
+        # You can find the histogram of the variable in this folder.
+
+
     return (hz_test_stat, p)
 
 def normality_test(x, method='shapiro-wilk'):
@@ -156,6 +260,65 @@ def normality_test(x, method='shapiro-wilk'):
         raise ValueError(
             'Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional. Mit keresel itt?')
 
+
+
+# OUTLIERS
+## UNIVARIATE OUTLIERS
+
+def detect_univariate_outlier_boundary(x):
+    """
+    Detect univariate outliers based on: Median +- 3 MAD
+    """
+    p = x.median() + 3* ss.median_absolute_deviation(x)
+    n = x.median() - 3* ss.median_absolute_deviation(x)
+    return  n,p
+
+def count_univariate_outliers(x):
+    """
+    Return the number of univariate outliers
+    """
+    n,p = detect_univariate_outlier_boundary(x)
+    o1 = x[x > p]
+    o2 = x[x < n]
+    return len(o1 + o2)
+
+def remove_univariate_outliers(x):
+    """
+    Remove univariate outliers.
+    """
+    n,p = detect_univariate_outlier_boundary(x)
+    return x[~(x < n) & ~(x > p)]
+
+
+## MULTIVARIATE OUTLIERS
+
+def mahalanobis_distance(x=None, data=None, cov=None):
+    """
+    Mahalanobis Distance
+
+    Formula: D^2 = (x-m)^T \cdot C^{-1} \cdot (x-m)
+    
+    Compute the Mahalanobis Distance between each row of x and the data  
+    x    : vector or matrix of data with, say, p columns.
+    data : ndarray of the distribution from which Mahalanobis distance of each observation of x is to be computed.
+    cov  : covariance matrix (p x p) of the distribution. If None, will be computed from data.
+    """
+
+    x_minus_mu = x - np.mean(data)
+    if not cov:
+        cov = np.cov(data.values.T)
+    inv_covmat = sp.linalg.inv(cov)
+    left_term = np.dot(x_minus_mu, inv_covmat)
+    mahal = np.dot(left_term, x_minus_mu.T)
+    return mahal.diagonal()
+
+
+
+def multivariate_outliers():
+    """
+    Mahalanobis distance
+    """
+    pass
 
 
 

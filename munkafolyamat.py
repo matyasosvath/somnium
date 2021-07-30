@@ -75,47 +75,45 @@ class Assumptions:
 
 class Korrelacio(Assumptions, HipotezisTesztek):
   def __init__(self, x,y):
-    self.x = x
-    self.y = y
-
-    self.data = pd.concat([x,y], axis=1) # két külön series-ből egy datafram legyen a "multivariate test" kedvéért
-
-
-    self.assumptions = self.test_for_assumptions(self.data, method="correlation")
-
-    logger.info("Korrelacio successfully initialized")
-
-
-  def run(self):         
-    scatter_plot(df, x=self.x,y=self.y)
-    #print(self.assumptions)
- 
-    if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05:
-        print('Multivarite assumptions')
-        print('Pearson')
-        print(self.pearson(self.x,self.y))
-
-    elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05:
-        print('Spearman')
-        print(self.spearman(self.x,self.y))
+        self.x = x
+        self.y = y
+        self.data = pd.concat([x,y], axis=1) # két külön series-ből egy datafram legyen a "multivariate test" kedvéért
+      
+      
+        self.assumptions = self.test_for_assumptions(self.data, method="correlation")
+      
+        logger.info("Korrelacio successfully initialized")
         
-        #TODO 
-        # try:
-        #     if self.assumptions["Univariate Outliers"]:
-        #         self.biweight_midcorrelation(self.adatok)
-        #         self.percentage_bend_correlation(self.adatok)
-                    
-        #     elif self.assumptions["Bivariate Outliers"]:
-        #         self.skipped_correlation(self.adatok)
-        #         self.shepherd_correlation(self.adatok)                    
-                    
-        #     else:
-        #         raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
-        # except Exception:
-        #     pass
 
-    else:
-        raise ValueError
+  def run(self):  
+
+        # Vizualizacio
+        scatter_plot(df, x=self.x,y=self.y)
+    
+        if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05:
+            print('Multivarite assumptions')
+            print('Pearson')
+            print(self.pearson(self.x,self.y))
+
+        elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05:
+            print('Spearman')
+            print(self.spearman(self.x,self.y))
+
+            #try:
+                #if self.assumptions["Univariate Outliers"]:
+            print(self.biweight_correlation(self.x,self.y))       
+            print(self.percentage_bend_correlation(self.x,self.y))
+      
+                #elif self.assumptions["Bivariate Outliers"]:
+            print(self.skipped_spearman_correlation(self.x,self.y))
+            print(self.shepherd_pi_correlation(self.x,self.y))            
+                #else:
+                #    raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
+            #except Exception:
+            #    print(Exception)
+
+        else:
+            raise ValueError
 
 
     # try:
