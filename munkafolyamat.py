@@ -91,6 +91,8 @@ class Korrelacio(Assumptions, HipotezisTesztek):
         scatter_plot(df, x=self.x,y=self.y)
 
         # Remove outliers
+        self.assumptions['Outliers'] = check_for_multivaraite_outliers(df = self.data, data=self.data[[self.x,self.y]])
+        print(self.assumptions)
         self.removed_outliers = remove_multivariate_outliers(x=self.data, data=self.data[[self.x,self.y]])
         print(self.removed_outliers)
 

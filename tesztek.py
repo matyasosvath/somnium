@@ -298,6 +298,13 @@ def remove_univariate_outliers(x):
 
 ## MULTIVARIATE OUTLIERS
 
+def check_for_multivaraite_outliers(df,data):
+    df_removed = mahalanobis_distance(x=df, data=data)
+    if df_removed.shape[0] != df.shape[0]:
+        return {'Multivariate Outliers': True}
+    else:
+        return {'Multivariate Outliers': False}
+
 def remove_multivariate_outliers(x=None, data=None):
     """
     Remove multivariate outliers from a df, based on Mahalanobis Distance.
