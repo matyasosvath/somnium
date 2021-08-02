@@ -5,6 +5,7 @@ import pandas as pd
 import pingouin as pg
 import scipy.stats as ss
 
+
 #from sklearn.utils import shuffle
 
 
@@ -46,6 +47,10 @@ class HipotezisTesztek:
 
     
     def spearman(self,x,y):
+        """
+        
+        Also possible to use this: df['score'].corr(df['grade']) for instance
+        """
         spearman = pg.corr(x, y, tail='two-sided', method='spearman').round(3)
         n, r,ci95,p, power = spearman.values[0]
         
@@ -144,6 +149,7 @@ class HipotezisTesztek:
 
 
 
+### Metrics
 
 def mean(x):
     return x.mean()
@@ -267,7 +273,7 @@ def normality_test(x, method='shapiro-wilk'):
 
 def detect_univariate_outlier_boundary(x):
     """
-    Detect univariate outliers based on: Median +- 3 MAD
+    Detect univariate outliers on a variable (pd.Series) based on: Median +- 3 MAD
     """
     p = x.median() + 3* ss.median_absolute_deviation(x)
     n = x.median() - 3* ss.median_absolute_deviation(x)
@@ -275,7 +281,7 @@ def detect_univariate_outlier_boundary(x):
 
 def count_univariate_outliers(x):
     """
-    Return the number of univariate outliers
+    Return the number of univariate outliers on a variable (pd.Series).
     """
     n,p = detect_univariate_outlier_boundary(x)
     o1 = x[x > p]
@@ -284,7 +290,7 @@ def count_univariate_outliers(x):
 
 def remove_univariate_outliers(x):
     """
-    Remove univariate outliers.
+    Remove univariate outliers for a variable (pd.Series).
     """
     n,p = detect_univariate_outlier_boundary(x)
     return x[~(x < n) & ~(x > p)]
@@ -292,11 +298,11 @@ def remove_univariate_outliers(x):
 
 ## MULTIVARIATE OUTLIERS
 
-def mahalanobis_distance(x=None, data=None):
+def remove_multivariate_outliers(x=None, data=None):
     """
-    Mahalanobis Distance
+    Remove multivariate outliers from a df, based on Mahalanobis Distance.
 
-    Formula: D^2 = (x-m)^T \cdot C^{-1} \cdot (x-m)
+    Képlet: D^2 = (x-m)^T \cdot C^{-1} \cdot (x-m)
     
     Compute the Mahalanobis Distance between each row of x and the data  
     x    : vector or matrix of data with, say, p columns.
@@ -305,7 +311,11 @@ def mahalanobis_distance(x=None, data=None):
 
     A p-value that is less than .001 is considered to be an outlier.
     
-    Returns data where the p-value is less than 0.001.
+    Function excludes data (df) where the p-value is less than 0.001.
+
+    Example
+
+
     """
 
     degress_of_freedom = data.shape[1] - 1
@@ -318,17 +328,10 @@ def mahalanobis_distance(x=None, data=None):
     mahal = np.dot(left, x_mu.T)
     
     x['mahalanobis'] = mahal.diagonal()
-    x['p'] = 1 - chi2.cdf(x['mahalanobis'], degress_of_freedom)
+    x['p'] = 1 - ss.chi2.cdf(x['mahalanobis'], degress_of_freedom)
     x = x[x['p'] > 0.001]
     return x.drop(['mahalanobis', 'p'], axis=1)
 
-
-
-def multivariate_outliers():
-    """
-    Mahalanobis distance
-    """
-    pass
 
 
 
@@ -344,6 +347,17 @@ if __name__ == '__main__':
 
     normality_test(df['body_mass_g'], method='shapiro-wilk')
     normality_test(df['body_mass_g'], method='kolmogorov-szmirnov')
+
+    # Test removing multivariate outliers
+    data = {'score': [91, 93, 72, 87, 86, 73, 68, 87, 78, 99, 95, 76, 84, 96, 76, 80, 83, 84, 73, 74],
+        'hours': [16, 6, 3, 1, 2, 3, 2, 5, 2, 5, 2, 3, 4, 3, 3, 3, 4, 3, 4, 4],
+        'prep': [3, 4, 0, 3, 4, 0, 1, 2, 1, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2],
+        'grade': [70, 88, 80, 83, 88, 84, 78, 94, 90, 93, 89, 82, 95, 94, 81, 93, 93, 90, 89, 89]
+        }
+
+    df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
+    df = remove_multivariate_outliers(x=df, data=df[['score', 'hours', 'grade']])
+    print(df)
 
 
 

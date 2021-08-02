@@ -78,7 +78,7 @@ class Korrelacio(Assumptions, HipotezisTesztek):
         self.x = x
         self.y = y
         self.data = pd.concat([x,y], axis=1) # két külön series-ből egy datafram legyen a "multivariate test" kedvéért
-      
+        # kell hogy a x.name-nek neve legyen különben hibát jelez ki
       
         self.assumptions = self.test_for_assumptions(self.data, method="correlation")
       
@@ -89,6 +89,11 @@ class Korrelacio(Assumptions, HipotezisTesztek):
 
         # Vizualizacio
         scatter_plot(df, x=self.x,y=self.y)
+
+        # Remove outliers
+        self.removed_outliers = remove_multivariate_outliers(x=self.data, data=self.data[[self.x,self.y]])
+        print(self.removed_outliers)
+
     
         if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05:
             print('Multivarite assumptions')
@@ -145,6 +150,17 @@ if __name__ == '__main__':
     #korr.assumptions
     korr.run()
 
+    data = {'score': [91, 93, 72, 87, 86, 73, 68, 87, 78, 99, 95, 76, 84, 96, 76, 80, 83, 84, 73, 74],
+        'hours': [16, 6, 3, 1, 2, 3, 2, 5, 2, 5, 2, 3, 4, 3, 3, 3, 4, 3, 4, 4],
+        'prep': [3, 4, 0, 3, 4, 0, 1, 2, 1, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2],
+        'grade': [70, 88, 80, 83, 88, 84, 78, 94, 90, 93, 89, 82, 95, 94, 81, 93, 93, 90, 89, 89]
+        }
+
+    df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
+
+    korr = Korrelacio(df['score'], df['grade'])
+    #korr.assumptions
+    korr.run()
 
 
 
