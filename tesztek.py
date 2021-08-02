@@ -298,9 +298,12 @@ def remove_univariate_outliers(x):
 
 ## MULTIVARIATE OUTLIERS
 
-def check_for_multivaraite_outliers(df,data):
-    df_removed = mahalanobis_distance(x=df, data=data)
-    if df_removed.shape[0] != df.shape[0]:
+def check_for_multivariate_outliers(x=None,data=None):
+    df_removed = remove_multivariate_outliers(x=x, data=data)
+
+    print(f"Multivariate outliers were removed based on Mahalanobis distance.")
+
+    if df_removed.shape[0] != x.shape[0]:
         return {'Multivariate Outliers': True}
     else:
         return {'Multivariate Outliers': False}
@@ -361,10 +364,13 @@ if __name__ == '__main__':
         'prep': [3, 4, 0, 3, 4, 0, 1, 2, 1, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2],
         'grade': [70, 88, 80, 83, 88, 84, 78, 94, 90, 93, 89, 82, 95, 94, 81, 93, 93, 90, 89, 89]
         }
-
+    print(df.head())
     df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
     df = remove_multivariate_outliers(x=df, data=df[['score', 'hours', 'grade']])
-    print(df)
+    print(df.head())
+
+    print(check_for_multivariate_outliers(x=df, data=df[['score', 'hours', 'grade']]))
+
 
 
 
