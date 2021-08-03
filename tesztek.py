@@ -147,6 +147,9 @@ class HipotezisTesztek:
 
         return r,p, ci95
 
+    def kendall_tau(self,x,y):
+        pass
+
 
 
 ### Metrics

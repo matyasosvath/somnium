@@ -69,9 +69,11 @@ def hisztogram():
 
 def scatter_plot(df, x,y):
     sns.scatterplot(x=x, y=y, data=df)
-    title = x + "-" + y + "-" + "scatter-plot"
+    #sns.regplot(df['grade'],df['score'])
+    title = x.name + "-" + y.name + "-" + "scatter-plot"
     print(title)
     save_fig('scatter_plot_diagram')
+    #save_fig(title)
 
 def normality_plot(x):
     x.plot.kde()
@@ -97,7 +99,7 @@ def plot_roc_curve(y_train,y_scroes, label=None):
 
 import pandas as pd
 import numpy as np
-import pinguin as pg
+import pingouin as pg
 
 df = pg.read_dataset('penguins')
 

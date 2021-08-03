@@ -91,21 +91,28 @@ class Korrelacio(Assumptions, HipotezisTesztek):
 
         # Vizualizacio
         scatter_plot(df, x=self.x,y=self.y)
+        
+        print(self.data)
+        # Remove outliers
+        self.removed_outliers = remove_multivariate_outliers(self.data)
+        
+        print(self.removed_outliers)
 
-        if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05:
+        logger.info("Outliers successfully removed!")
+
+        self.x, self.y = self.removed_outliers
+        print(type(self.x), type(self.y))
+        print(self.x)
+        print(self.y)
+
+        if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05 and self.assumptions['Outliers']['Multivariate Outliers'] == False:
 
             self.pearson(self.x,self.y)
             logger.info("Pearson test successfully run!")
 
-        elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05:
+        elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05 or self.assumptions['Outliers']['Multivariate Outliers']:
 
-            self.removed_outliers = remove_multivariate_outliers(self.data)
-            #print(self.removed_outliers)
-            logger.info("Outliers successfully removed!")
-
-            self.x, self.y = self.removed_outliers
-            print(self.x, self.y)
-
+            print(self.x.ndim, self.y.ndim)
             self.spearman(self.x,self.y)#if self.assumptions["Univariate Outliers"]:
             logger.info("Spearman test successfully run!")
             #    print(self.biweight_correlation(self.x,self.y))       
@@ -145,7 +152,7 @@ if __name__ == '__main__':
     df = pg.read_dataset('penguins')
     df.dropna(inplace=True)
 
-    a = Assumptions()
+    #a = Assumptions()
     # a.test_for_assumptions(df['body_mass_g'], method="correlation")
 
     # korr = Korrelacio(df['body_mass_g'], df['bill_depth_mm'])
@@ -157,7 +164,7 @@ if __name__ == '__main__':
         'prep': [3, 4, 0, 3, 4, 0, 1, 2, 1, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2],
         'grade': [70, 88, 80, 83, 88, 84, 78, 94, 90, 93, 89, 82, 95, 94, 81, 93, 93, 90, 89, 89]
         }
-    a = Assumptions()
+    #a = Assumptions()
 
     df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
 
