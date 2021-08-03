@@ -82,7 +82,8 @@ class Korrelacio(Assumptions, HipotezisTesztek):
         # kell hogy a x.name-nek neve legyen különben hibát jelez ki
       
         self.assumptions = self.test_for_assumptions(self.data, method="correlation")
-      
+        self.assumptions['Outliers'] = check_for_multivariate_outliers(self.data)
+
         logger.info("Korrelacio successfully initialized")
         
 
@@ -91,30 +92,29 @@ class Korrelacio(Assumptions, HipotezisTesztek):
         # Vizualizacio
         scatter_plot(df, x=self.x,y=self.y)
 
-        # Remove outliers
-
-        self.removed_outliers = remove_multivariate_outliers(x=self.data, data=self.data[[self.x,self.y]])
-        print(self.removed_outliers)
-
-    
         if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05:
-            print('Multivarite assumptions')
-            print('Pearson')
-            print(self.pearson(self.x,self.y))
+
+            self.pearson(self.x,self.y)
+            logger.info("Pearson test successfully run!")
 
         elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05:
-            print('Spearman')
-            print(self.spearman(self.x,self.y))
 
-            #try:
-                #if self.assumptions["Univariate Outliers"]:
-            print(self.biweight_correlation(self.x,self.y))       
-            print(self.percentage_bend_correlation(self.x,self.y))
+            self.removed_outliers = remove_multivariate_outliers(self.data)
+            #print(self.removed_outliers)
+            logger.info("Outliers successfully removed!")
+
+            self.x, self.y = self.removed_outliers
+            print(self.x, self.y)
+
+            self.spearman(self.x,self.y)#if self.assumptions["Univariate Outliers"]:
+            logger.info("Spearman test successfully run!")
+            #    print(self.biweight_correlation(self.x,self.y))       
+            #    print(self.percentage_bend_correlation(self.x,self.y))
       
-                #elif self.assumptions["Bivariate Outliers"]:
-            print(self.skipped_spearman_correlation(self.x,self.y))
-            print(self.shepherd_pi_correlation(self.x,self.y))            
-                #else:
+            if self.assumptions["Outliers"]['Multivariate Outliers']:
+                self.skipped_spearman_correlation(self.x,self.y)
+                self.shepherd_pi_correlation(self.x,self.y)            
+            #else:
                 #    raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
             #except Exception:
             #    print(Exception)

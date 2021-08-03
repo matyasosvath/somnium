@@ -298,19 +298,21 @@ def remove_univariate_outliers(x):
 
 ## MULTIVARIATE OUTLIERS
 
-def check_for_multivariate_outliers(x=None,data=None):
-    df_removed = remove_multivariate_outliers(x=x, data=data)
+def check_for_multivariate_outliers(data):
+    df_removed = remove_multivariate_outliers(data)
 
     print(f"Multivariate outliers were removed based on Mahalanobis distance.")
-
-    if df_removed.shape[0] != x.shape[0]:
+    
+    if df_removed.shape[0] != df.shape[0]:
         return {'Multivariate Outliers': True}
     else:
         return {'Multivariate Outliers': False}
 
-def remove_multivariate_outliers(x=None, data=None):
+def remove_multivariate_outliers(data):
     """
     Remove multivariate outliers from a df, based on Mahalanobis Distance.
+
+    data: dataframe with multiple pd.series
 
     Képlet: D^2 = (x-m)^T \cdot C^{-1} \cdot (x-m)
     
@@ -325,23 +327,21 @@ def remove_multivariate_outliers(x=None, data=None):
 
     Example
 
-
     """
 
     degress_of_freedom = data.shape[1] - 1
-    x = data
-    x_mu = x - np.mean(data)
+
+    x_mu = data - np.mean(data)
 
     cov = np.cov(data.values.T)
     inv_covmat = np.linalg.inv(cov)
     left = np.dot(x_mu, inv_covmat)
     mahal = np.dot(left, x_mu.T)
     
-    x['mahalanobis'] = mahal.diagonal()
-    x['p'] = 1 - ss.chi2.cdf(x['mahalanobis'], degress_of_freedom)
-    x = x[x['p'] > 0.001]
-    return x.drop(['mahalanobis', 'p'], axis=1)
-
+    data['mahalanobis'] = mahal.diagonal()
+    data['p'] = 1 - ss.chi2.cdf(data['mahalanobis'], degress_of_freedom)
+    data = data[data['p'] > 0.001]
+    return data.drop(['mahalanobis', 'p'], axis=1)
 
 
 

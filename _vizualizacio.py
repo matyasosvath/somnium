@@ -60,6 +60,7 @@ def oszlopdiagram(df, csoportok: str, pontszamok: str):
                 ci=95, 
                 capsize=0.05, 
                 color='lightblue')
+
     save_fig('oszlopdiagram3')    
 
 def hisztogram():
@@ -68,6 +69,8 @@ def hisztogram():
 
 def scatter_plot(df, x,y):
     sns.scatterplot(x=x, y=y, data=df)
+    title = x + "-" + y + "-" + "scatter-plot"
+    print(title)
     save_fig('scatter_plot_diagram')
 
 def normality_plot(x):
@@ -92,3 +95,11 @@ def plot_roc_curve(y_train,y_scroes, label=None):
     [...] # Add axis labels and grid
 
 
+import pandas as pd
+import numpy as np
+import pinguin as pg
+
+df = pg.read_dataset('penguins')
+
+
+scatter_plot(df, df['body_mass_g'], df['bill_length_mm'])
