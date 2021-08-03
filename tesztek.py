@@ -54,7 +54,7 @@ class HipotezisTesztek:
         spearman = pg.corr(x, y, tail='two-sided', method='spearman').round(3)
         n, r,ci95,p, power = spearman.values[0]
         
-        pos_neg = 'postively' if r>0 else 'negatively'
+        pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
         print(f'The relationship between {x.name} and {y.name} was assessed.')
@@ -74,7 +74,7 @@ class HipotezisTesztek:
         
         n,r,ci95, p, power = pg.corr(x, y, method="bicor").round(3)
   
-        pos_neg = 'postively' if int(r)>0 else 'negatively'
+        pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
         print(f"The relationship between {x.name} and {y.name} was assessed with biweight midcorrelation (robust).")
@@ -95,7 +95,7 @@ class HipotezisTesztek:
         
         n,r,ci95, p, power = pg.corr(x, y, method="bicor").round(3)
   
-        pos_neg = 'postively' if int(r)>0 else 'negatively'
+        pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
         print(f"The relationship between {x.name} and {y.name} was assessed with Percentage bend correlation (robust).")
@@ -115,7 +115,7 @@ class HipotezisTesztek:
         
         n,outliers,r,ci95, p, power = pg.corr(x, y, method="shepherd").round(3)
   
-        pos_neg = 'postively' if int(r)>0 else 'negatively'
+        pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
         print(f"The relationship between {x.name} and {y.name} was assessed with Shepherd’s pi correlation (")
@@ -135,7 +135,7 @@ class HipotezisTesztek:
         
         n,outliers,r,ci95, p, power = pg.corr(x, y, method="skipped").round(3)
   
-        pos_neg = 'postively' if int(r)>0 else 'negatively'
+        pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
         print(f"The relationship between {x.name} and {y.name} was assessed with Skipped spearman correlation.")
@@ -369,10 +369,8 @@ if __name__ == '__main__':
         }
     print(df.head())
     df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
-    df = remove_multivariate_outliers(x=df, data=df[['score', 'hours', 'grade']])
     print(df.head())
 
-    print(check_for_multivariate_outliers(x=df, data=df[['score', 'hours', 'grade']]))
 
 
 
