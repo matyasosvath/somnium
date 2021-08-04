@@ -72,7 +72,9 @@ class HipotezisTesztek:
 
         """
         
-        n,r,ci95, p, power = pg.corr(x, y, method="bicor").round(3)
+        biweight = pg.corr(x, y, method="bicor").round(3)
+        n, r,ci95,p, power = biweight.values[0]
+
   
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
@@ -93,8 +95,11 @@ class HipotezisTesztek:
 
         """
         
-        n,r,ci95, p, power = pg.corr(x, y, method="bicor").round(3)
-  
+        perc_bend = pg.corr(x, y, method="bicor").round(3)
+        n, r,ci95,p, power = perc_bend.values[0]
+
+
+
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
@@ -113,8 +118,10 @@ class HipotezisTesztek:
         Shepherd’s pi correlation (robust)
         """
         
-        n,outliers,r,ci95, p, power = pg.corr(x, y, method="shepherd").round(3)
-  
+        shepherd = pg.corr(x, y, method="shepherd").round(3)
+        n, r,ci95,p, power = shepherd.values[0]
+
+
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
@@ -133,8 +140,11 @@ class HipotezisTesztek:
         Skipped spearman correlation (robust)
         """
         
-        n,outliers,r,ci95, p, power = pg.corr(x, y, method="skipped").round(3)
-  
+        skipped =  pg.corr(x, y, method="skipped").round(3)
+        n, r,ci95,p, power = skipped.values[0]
+
+        print(r)
+        print(type(r))
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
@@ -344,6 +354,9 @@ def remove_multivariate_outliers(data):
     data['mahalanobis'] = mahal.diagonal()
     data['p'] = 1 - ss.chi2.cdf(data['mahalanobis'], degress_of_freedom)
     data = data[data['p'] > 0.001]
+
+
+    
     return data.drop(['mahalanobis', 'p'], axis=1)
 
 

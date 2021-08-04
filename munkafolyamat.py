@@ -96,7 +96,7 @@ class Korrelacio(Assumptions, HipotezisTesztek):
         # Remove outliers
         self.removed_outliers = remove_multivariate_outliers(self.data)
         
-        print(f"removed outliers az ez: {self.removed_outliers}")
+        #print(f"removed outliers az ez: {self.removed_outliers}")
 
         logger.info("Outliers successfully removed!")
 
