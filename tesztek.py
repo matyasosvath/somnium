@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pingouin as pg
 import scipy.stats as ss
-
+from sklearn import metrics
 
 #from sklearn.utils import shuffle
 
@@ -18,6 +18,40 @@ logger = logging.getLogger()
 # Saját moduleok
 from _vizualizacio import *
 
+
+
+##############################
+### ADAT TÍPUSOK ############
+##############################
+
+
+def adattipus(oszlop):
+    "oszlop: pd.Series or np.array"
+    a = len(oszlop.unique().tolist())
+    if a <= 2:
+        return 'nominal'
+    if 2 < a <= 8:
+        return 'ordinal'
+    if a > 8:
+        return 'ratio-interval'
+
+""" 
+def adattipuskkezelo(adat):
+    adattipusok = {}
+    for col in adat.columns:
+        a = len(adat[col].unique().tolist())
+        if a <= 2:
+            adattipusok[col] = 'nominal'
+        if 2 < a <= 8:
+            adattipusok[col] = 'ordinal'
+        if a > 8:
+            adattipusok[col] = 'ratio-or-interval'
+    #print(f'{adattipusok} \n')
+    with open('jellemzok.json', 'w') as f:
+        json.dump(adattipusok, f)
+    return adattipusok
+ """
+
 #######################
 ### HIPOTEZIS TESZT ###
 #######################
@@ -30,6 +64,7 @@ class HipotezisTesztek:
 
     logger.info("Hipotezis tesztek successfully initialized")
     
+    # Folytonos-folytonos
     def pearson(self,x,y):
         pearson = pg.corr(x, y, tail='two-sided', method='pearson').round(3)
         n,r,ci95,p,bf10, power =  pearson.values[0]
@@ -119,7 +154,7 @@ class HipotezisTesztek:
         """
         
         shepherd = pg.corr(x, y, method="shepherd").round(3)
-        n, r,ci95,p, power = shepherd.values[0]
+        n, outliers, r,ci95,p, power = shepherd.values[0]
 
 
         pos_neg = 'postively' if float(r)>0 else 'negatively'
@@ -141,7 +176,7 @@ class HipotezisTesztek:
         """
         
         skipped =  pg.corr(x, y, method="skipped").round(3)
-        n, r,ci95,p, power = skipped.values[0]
+        n, outliers, r,ci95,p, power = skipped.values[0]
 
         print(r)
         print(type(r))
@@ -158,6 +193,15 @@ class HipotezisTesztek:
         return r,p, ci95
 
     def kendall_tau(self,x,y):
+        pass
+
+    def point_biserial_correlation(self,x,y):
+        pass
+
+    def rank_biserial_correlation(self,x,y):
+        pass
+    
+    def phi_coeff_matthews_coeff(self,x,y):
         pass
 
 
@@ -407,34 +451,34 @@ if __name__ == '__main__':
 #                 self.data = data
 #                 self.actual = self.test_stat(data)
 
-#         def permutation(self):
-#                 v1, v2 = self.data[0], self.data[1]
+        # def permutation(self):
+        #         v1, v2 = self.data[0], self.data[1]
 
-#                 # for i in self.data[2:]:
-#                 #         try:
-#                 #                 v = i
-#                 #         except IndexError:
-#                 #                 pass
+        #         # for i in self.data[2:]:
+        #         #         try:
+        #         #                 v = i
+        #         #         except IndexError:
+        #         #                 pass
 
-#                 pool = np.array(self.data).flatten()
-#                 # print(f"'pool':{pool}")
-#                 data = shuffle(pool)
-#                 # print(f'Shuffled Data: {data}')
+        #         pool = np.array(self.data).flatten()
+        #         # print(f"'pool':{pool}")
+        #         data = shuffle(pool)
+        #         # print(f'Shuffled Data: {data}')
                 
-#                 v1 = self.resample(data, size=len(v1), replace=False)
-#                 v2 = self.resample(data, size=len(v2), replace=False)
-#                 return v1, v2
+        #         v1 = self.resample(data, size=len(v1), replace=False)
+        #         v2 = self.resample(data, size=len(v2), replace=False)
+        #         return v1, v2
 
-#         def resample(self, x, size, replace = False):
-#                  return np.random.choice(x, size=size, replace=replace)
+        # def resample(self, x, size, replace = False):
+        #          return np.random.choice(x, size=size, replace=replace)
 
 
-#         def pvalue(self, iter = 1000):
-#                 self.permute_dist = [self.test_stat(self.permutation()) for x in range(iter)]
-#                 # print(f' Observed Difference: {self.actual}')
+        # def pvalue(self, iter = 1000):
+        #         self.permute_dist = [self.test_stat(self.permutation()) for x in range(iter)]
+        #         # print(f' Observed Difference: {self.actual}')
 
-#                 count = sum(1 for i in self.permute_dist if i >= self.actual)
-#                 return count/iter
+        #         count = sum(1 for i in self.permute_dist if i >= self.actual)
+        #         return count/iter
 
 
 
@@ -450,38 +494,6 @@ if __name__ == '__main__':
 
 
 
-# ##############################
-# ### ADAT TÍPUSOK ############
-# ##############################
-
-
-
-# def adattipus(oszlop):
-#     "Should pd.Series"
-#     a = len(oszlop.unique().tolist())
-#     if a <= 2:
-#         return 'nominal'
-#     if 2 < a <= 8:
-#         return 'ordinal'
-#     if a > 8:
-#         return 'ratio-or-interval'
-
-# """ 
-# def adattipuskkezelo(adat):
-#     adattipusok = {}
-#     for col in adat.columns:
-#         a = len(adat[col].unique().tolist())
-#         if a <= 2:
-#             adattipusok[col] = 'nominal'
-#         if 2 < a <= 8:
-#             adattipusok[col] = 'ordinal'
-#         if a > 8:
-#             adattipusok[col] = 'ratio-or-interval'
-#     #print(f'{adattipusok} \n')
-#     with open('jellemzok.json', 'w') as f:
-#         json.dump(adattipusok, f)
-#     return adattipusok
-#  """
 
 
 

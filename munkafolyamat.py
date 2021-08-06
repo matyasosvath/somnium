@@ -75,75 +75,102 @@ class Assumptions:
 
 
 class Korrelacio(Assumptions, HipotezisTesztek):
-  def __init__(self, x,y):
+    def __init__(self, x,y):
         self.x = x
         self.y = y
         self.data = pd.concat([x,y], axis=1) # két külön series-ből egy datafram legyen a "multivariate test" kedvéért
         # kell hogy a x.name-nek neve legyen különben hibát jelez ki
       
+
+        self.x_adattipus = adattipus(self.x)
+        self.y_adattipus = adattipus(self.y)
+        print(self.x_adattipus, self.y_adattipus)
+
         self.assumptions = self.test_for_assumptions(self.data, method="correlation")
         self.assumptions['Outliers'] = check_for_multivariate_outliers(self.data)
 
         logger.info("Korrelacio successfully initialized")
-        
-
-  def run(self):  
+    
+    def run(self):  
 
         # Vizualizacio
         scatter_plot(df, x=self.x,y=self.y)
         
-        print(self.data)
+        #print(self.data)
+
         # Remove outliers
         self.removed_outliers = remove_multivariate_outliers(self.data)
-        
+
         #print(f"removed outliers az ez: {self.removed_outliers}")
-
+        
         logger.info("Outliers successfully removed!")
-
+        
         self.x, self.y = self.removed_outliers.iloc[:, 0], self.removed_outliers.iloc[:, 1]
-        print(type(self.x), type(self.y))
-        print(self.x)
-        print(self.y)
+        # print(type(self.x), type(self.y))
+        # print(self.x)
+        # print(self.y)
 
-        if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05 and self.assumptions['Outliers']['Multivariate Outliers'] == False:
 
-            self.pearson(self.x,self.y)
-            logger.info("Pearson test successfully run!")
 
-        elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05 or self.assumptions['Outliers']['Multivariate Outliers']:
 
-            print(self.x.ndim, self.y.ndim)
-            self.spearman(self.x,self.y)#if self.assumptions["Univariate Outliers"]:
+        # Folytonos-folytonos
+        if self.y_adattipus == 'ratio-interval' and self.x_adattipus == 'ratio-interval':
+
+            if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05 and self.assumptions['Outliers']['Multivariate Outliers'] == False:
+
+                self.pearson(self.x,self.y)
+                logger.info("Pearson test successfully run!")
+
+            elif self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] <= 0.05 or self.assumptions['Outliers']['Multivariate Outliers']:
+
+                #print(self.x.ndim, self.y.ndim)
+                self.spearman(self.x,self.y)#if self.assumptions["Univariate Outliers"]:
+                logger.info("Spearman test successfully run!")
+                
+                #print(self.biweight_correlation(self.x,self.y))       
+                #print(self.percentage_bend_correlation(self.x,self.y))
+        
+                if self.assumptions["Outliers"]['Multivariate Outliers']:
+                    self.skipped_spearman_correlation(self.x,self.y)
+                    self.shepherd_pi_correlation(self.x,self.y)
+                    logger.info("Skipped spearman and shepherd pi corr test ran successfully!")         
+
+            else:
+                raise ValueError
+        
+        # Folytonos-Ordinális
+        elif self.y_adattipus == 'ordinal' and self.x_adattipus == 'ratio-interval':
+            
+            # Spearman rankkorrelacio
+            self.spearman(self.x,self.y)
+
+            logger.info("Folytonos-Ordinalis")
             logger.info("Spearman test successfully run!")
-            #    print(self.biweight_correlation(self.x,self.y))       
-            #    print(self.percentage_bend_correlation(self.x,self.y))
-      
-            if self.assumptions["Outliers"]['Multivariate Outliers']:
-                self.skipped_spearman_correlation(self.x,self.y)
-                self.shepherd_pi_correlation(self.x,self.y)            
-            #else:
-                #    raise ValueError("Something wrong with Correlacio class, self.assumptions bivariate/univariate outliers")
-            #except Exception:
-            #    print(Exception)
+
+        
+        # Folytonos-Nominális
+        elif self.y_adattipus == 'ratio-interval' and self.x_adattipus == 'ordinal':
+            # Point-biserial correlation coefficient
+            pass
+            
+
+        # Ordinális-Ordinális
+        elif self.y_adattipus == 'ordinal' and self.x_adattipus == 'ordinal':
+            # Kendalls rank correlation coefficient
+            pass
+
+        # Ordinális-Nominális
+        elif self.y_adattipus == 'ordinal' and self.x_adattipus == 'nominal':
+            # Rank-biserial correlation coefficient
+            pass
+
+        # Nominális-nominális
+        elif self.y_adattipus == 'nominal' and self.x_adattipus == 'nominal':
+            # Phi coefficient or Matthews correlation coefficient 
+            pass
 
         else:
-            raise ValueError
-
-
-    # try:
-    #     if self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] > 0.05:
-    #         print('Pearson')
-    #         print(self.pearson(self.x,self.y))
-
-    #     elif self.assumptions['Normality Test']['Shapiro-Wilk']['P-value'] <= 0.05:
-    #         print('Spearman')
-    #         print(self.spearman(self.x,self.y))
-        
-    #     else:
-    #         raise ValueError
-
-    # except:
-    #     pass
+            raise ValueError("Ide nem lenne szabad jonni. Nezd meg az if logikat.")
 
 
 
