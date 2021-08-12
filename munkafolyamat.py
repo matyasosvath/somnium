@@ -84,19 +84,14 @@ class Korrelacio(Assumptions, HipotezisTesztek):
 
         self.x_adattipus = adattipus(self.x)
         self.y_adattipus = adattipus(self.y)
-        print(self.x_adattipus, self.y_adattipus)
+        #print(self.x_adattipus, self.y_adattipus)
 
         self.assumptions = self.test_for_assumptions(self.data, method="correlation")
         self.assumptions['Outliers'] = check_for_multivariate_outliers(self.data)
 
-        logger.info("Korrelacio successfully initialized")
+        logger.info("Korrelacio class successfully initialized")
     
     def run(self):  
-
-        # Vizualizacio
-        scatter_plot(df, x=self.x,y=self.y)
-        
-        #print(self.data)
 
         # Remove outliers
         self.removed_outliers = remove_multivariate_outliers(self.data)
@@ -110,12 +105,12 @@ class Korrelacio(Assumptions, HipotezisTesztek):
         # print(self.x)
         # print(self.y)
 
-
-
-
         # Folytonos-folytonos
         if self.y_adattipus == 'ratio-interval' and self.x_adattipus == 'ratio-interval':
-
+            
+            # Vizualizacio
+            scatter_plot(df, x=self.x,y=self.y)
+        
             if self.assumptions['Normality Test']['Henze-Zirkler']['P-value'] > 0.05 and self.assumptions['Outliers']['Multivariate Outliers'] == False:
 
                 self.pearson(self.x,self.y)
@@ -126,51 +121,54 @@ class Korrelacio(Assumptions, HipotezisTesztek):
                 #print(self.x.ndim, self.y.ndim)
                 self.spearman(self.x,self.y)#if self.assumptions["Univariate Outliers"]:
                 logger.info("Spearman test successfully run!")
-                
-                #print(self.biweight_correlation(self.x,self.y))       
-                #print(self.percentage_bend_correlation(self.x,self.y))
-        
-                if self.assumptions["Outliers"]['Multivariate Outliers']:
+
+                # Bivariate Outliers
+                if self.assumptions["Outliers"]['Multivariate Outliers']: 
                     self.skipped_spearman_correlation(self.x,self.y)
                     self.shepherd_pi_correlation(self.x,self.y)
                     logger.info("Skipped spearman and shepherd pi corr test ran successfully!")         
+                
+                # Univariate outliers
+                # else:
+                #     self.biweight_correlation(self.x,self.y)    
+                #     self.percentage_bend_correlation(self.x,self.y)
 
             else:
                 raise ValueError
         
         # Folytonos-Ordinális
         elif self.y_adattipus == 'ordinal' and self.x_adattipus == 'ratio-interval':
-            
             # Spearman rankkorrelacio
             self.spearman(self.x,self.y)
-
-            logger.info("Folytonos-Ordinalis")
             logger.info("Spearman test successfully run!")
 
-        
         # Folytonos-Nominális
         elif self.y_adattipus == 'ratio-interval' and self.x_adattipus == 'ordinal':
             # Point-biserial correlation coefficient
-            pass
+            self.point_biserial_correlation(self.x,self.y)
+            logger.info("Point biserial correlation test successfully run!")
             
-
         # Ordinális-Ordinális
         elif self.y_adattipus == 'ordinal' and self.x_adattipus == 'ordinal':
             # Kendalls rank correlation coefficient
-            pass
+            self.kendall_tau(self.x,self.y)
+            logger.info("Kendall tau-b test successfully run!")
 
         # Ordinális-Nominális
         elif self.y_adattipus == 'ordinal' and self.x_adattipus == 'nominal':
             # Rank-biserial correlation coefficient
-            pass
+            self.rank_biserial_correlation(self.x,self.y)
+            logger.error("Rank biserial correlation are not implemented yet!")
 
         # Nominális-nominális
         elif self.y_adattipus == 'nominal' and self.x_adattipus == 'nominal':
             # Phi coefficient or Matthews correlation coefficient 
-            pass
+            self.phi_coeff_matthews_coeff(self.x,self.y)
+            logger.info("Matthews coefficient test successfully run!")
 
         else:
-            raise ValueError("Ide nem lenne szabad jonni. Nezd meg az if logikat.")
+            raise ValueError("Hiba. Nincs tobb korrelacio lehetoseg.")
+
 
 
 

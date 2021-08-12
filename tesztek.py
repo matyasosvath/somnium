@@ -178,8 +178,8 @@ class HipotezisTesztek:
         skipped =  pg.corr(x, y, method="skipped").round(3)
         n, outliers, r,ci95,p, power = skipped.values[0]
 
-        print(r)
-        print(type(r))
+        #print(r)
+        #print(type(r))
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
@@ -192,17 +192,28 @@ class HipotezisTesztek:
 
         return r,p, ci95
 
-    def kendall_tau(self,x,y):
-        pass
+    def kendall_tau(self, x,y):
+        tau_b =  pg.corr(x, y, method="kendall").round(3)
+        n, r,ci95,p, power = tau_b.values[0]
+        return r, ci95, p
 
-    def point_biserial_correlation(self,x,y):
-        pass
+    def point_biserial_correlation(self, x,y):
+        test_stat, p = np.round(ss.pointbiserialr(x, y),4)
+        return test_stat, p
 
-    def rank_biserial_correlation(self,x,y):
-        pass
+    def rank_biserial_correlation(self, x,y):
+        raise NotImplementedError
     
-    def phi_coeff_matthews_coeff(self,x,y):
-        pass
+    def phi_coeff_matthews_coeff(self, x,y):
+        """
+        Phi Coefficient/Matthews Correlation Coefficient
+
+        #TODO CI, p value missing, implement manually
+        """
+        r =  metrics.matthews_corrcoef(x,y)
+        #p = pvalue(x,y)
+        #ci = ci()
+        return r
 
 
 
@@ -398,8 +409,6 @@ def remove_multivariate_outliers(data):
     data['mahalanobis'] = mahal.diagonal()
     data['p'] = 1 - ss.chi2.cdf(data['mahalanobis'], degress_of_freedom)
     data = data[data['p'] > 0.001]
-
-
     
     return data.drop(['mahalanobis', 'p'], axis=1)
 

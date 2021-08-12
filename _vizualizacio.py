@@ -72,7 +72,7 @@ def scatter_plot(df, x,y):
     #sns.regplot(df['grade'],df['score'])
     title = x.name + "-" + y.name + "-" + "scatter-plot"
     print(title)
-    save_fig('scatter_plot_diagram')
+    save_fig(title)
     #save_fig(title)
 
 def normality_plot(x):
