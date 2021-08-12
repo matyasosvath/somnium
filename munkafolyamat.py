@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pingouin as pg
 import scipy.stats as ss
+import itertools
 
 import logging
 
@@ -192,10 +193,20 @@ if __name__ == '__main__':
     #a = Assumptions()
 
     df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
+    for i,j in list(itertools.combinations(list(df), 2)):
+        print(i,j)
+        #print(type(i), type(j))
+        #print(df[[i,j]])
 
-    korr = Korrelacio(df['score'], df['grade'])
+        korr = Korrelacio(df[i], df[j])
+        korr.run()
+
+        korr = Korrelacio(df[j], df[i])
+        korr.run()
+    
+    #korr = Korrelacio(df['grade'], df['score'])
     #korr.assumptions
-    korr.run()
+    #korr.run()
 
 
 
