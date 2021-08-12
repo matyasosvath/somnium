@@ -211,10 +211,42 @@ class HipotezisTesztek:
         #TODO CI, p value missing, implement manually
         """
         r =  metrics.matthews_corrcoef(x,y)
-        #p = pvalue(x,y)
+        p = pvalue(x,y, metrics.matthews_corrcoef)
         #ci = ci()
-        return r
+        return r, p
 
+
+
+from sklearn.utils import shuffle
+import numpy as np
+
+def permutation(v1,v2):
+  #print('permut')
+  v1 = pd.Series(v1)
+  v2 = pd.Series(v2)
+  data = pd.concat([v1,v2])
+  data = shuffle(data)
+                
+  v1 = resample(data, size=len(v1), replace=False)
+  v2 = resample(data, size=len(v2), replace=False)
+  return v1, v2
+
+def resample(x, size, replace = False):
+  return np.random.choice(x, size=size, replace=replace)
+
+def pvalue(x,y, hypothesis_test, iter = 1000):
+  actual = hypothesis_test(x,y)
+  #print(actual)
+  #permute_dist = [phi_coeff_matthews_coeff(permutation(x,y)) for _ in range(iter)] # return value in permutation(x,y) do not works, dont know why
+  
+  permute_dist = []
+  for _ in range(iter):
+    a,b = permutation(x,y)
+    permute_dist.append(hypothesis_test(a,b))
+  #print(permute_dist)
+
+  count = sum(1 for i in permute_dist if i >= actual)
+  return count/iter
 
 
 ### Metrics
