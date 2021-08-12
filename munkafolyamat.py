@@ -175,15 +175,11 @@ class Korrelacio(Assumptions, HipotezisTesztek):
 
 if __name__ == '__main__':
     import pingouin as pg
-    df = pg.read_dataset('penguins')
+    #df = pg.read_dataset('penguins')
+
+
+    # AdatTisztitas
     df.dropna(inplace=True)
-
-    #a = Assumptions()
-    # a.test_for_assumptions(df['body_mass_g'], method="correlation")
-
-    # korr = Korrelacio(df['body_mass_g'], df['bill_depth_mm'])
-    # #korr.assumptions
-    # korr.run()
 
     data = {'score': [91, 93, 72, 87, 86, 73, 68, 87, 78, 99, 95, 76, 84, 96, 76, 80, 83, 84, 73, 74],
         'hours': [16, 6, 3, 1, 2, 3, 2, 5, 2, 5, 2, 3, 4, 3, 3, 3, 4, 3, 4, 4],
@@ -193,6 +189,7 @@ if __name__ == '__main__':
     #a = Assumptions()
 
     df = pd.DataFrame(data,columns=['score', 'hours', 'prep','grade'])
+
     for i,j in list(itertools.combinations(list(df), 2)):
         print(i,j)
         #print(type(i), type(j))

@@ -216,6 +216,7 @@ class HipotezisTesztek:
         return r, p
 
 
+#TODO permutation test ABSTRACT PARENT CLASS
 
 from sklearn.utils import shuffle
 import numpy as np
