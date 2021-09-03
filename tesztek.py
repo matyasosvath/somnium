@@ -15,7 +15,7 @@ import logging
 logger = logging.getLogger()
 
 
-# Saját moduleok
+# Saját modulok
 from _vizualizacio import *
 
 
@@ -27,6 +27,7 @@ from _vizualizacio import *
 
 def adattipus(oszlop):
     "oszlop: pd.Series or np.array"
+    oszlop = pd.Series(oszlop)
     a = len(oszlop.unique().tolist())
     if a <= 2:
         return 'nominal'
@@ -35,22 +36,6 @@ def adattipus(oszlop):
     if a > 8:
         return 'ratio-interval'
 
-""" 
-def adattipuskkezelo(adat):
-    adattipusok = {}
-    for col in adat.columns:
-        a = len(adat[col].unique().tolist())
-        if a <= 2:
-            adattipusok[col] = 'nominal'
-        if 2 < a <= 8:
-            adattipusok[col] = 'ordinal'
-        if a > 8:
-            adattipusok[col] = 'ratio-or-interval'
-    #print(f'{adattipusok} \n')
-    with open('jellemzok.json', 'w') as f:
-        json.dump(adattipusok, f)
-    return adattipusok
- """
 
 #######################
 ### HIPOTEZIS TESZT ###
