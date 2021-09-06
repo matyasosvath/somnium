@@ -5,7 +5,7 @@ import pandas as pd
 import pingouin as pg
 import scipy.stats as ss
 from sklearn import metrics
-
+from sklearn.utils import shuffle
 #from sklearn.utils import shuffle
 
 
@@ -46,6 +46,53 @@ class HipotezisTesztek:
 
     def __init__(self):
         pass
+
+    def __permutation(self,v1,v2):
+        """
+        Permtutation with two groups
+        """
+        #print('permut')
+        v1 = pd.Series(v1)
+        v2 = pd.Series(v2)
+        # shuffle groups
+        data = pd.concat([v1,v2])
+        data = shuffle(data)
+        # resample groups
+        v1 = self.__resample(data, size=len(v1), replace=False)
+        v2 = self.__resample(data, size=len(v2), replace=False)
+        return v1, v2
+
+    def __resample(self, x, size, replace = False):
+        """
+        Bootstrap Resampling
+        """
+        return np.random.choice(x, size=size, replace=replace)
+
+    def __pvalue(self, x,y, hypothesis_test, iter = 1000, ci=True, ci_level=95):
+        actual = hypothesis_test(x,y)
+        #print(actual)
+
+        #permute_dist = [phi_coeff_matthews_coeff(permutation(x,y)) for _ in range(iter)] # return value in permutation(x,y) do not works, dont know why
+        permute_dist = []
+        for _ in range(iter):
+            a,b = self.__permutation(x,y)
+            permute_dist.append(hypothesis_test(a,b))
+        #print(permute_dist)
+
+        # Bootstraped [bs] Confidence Interval
+        if ci:
+            statistics = sorted(permute_dist)
+            # Trim endpoints of resampled CI
+            trim = ((1 - (ci_level/100))/2)
+            endpoints = int(trim*1000)
+            trimmed_ci = statistics[endpoints:-endpoints]
+            lower, upper = min(trimmed_ci), max(trimmed_ci)
+        
+        # Calculate bootrstrapped p-value
+        count = sum(1 for i in permute_dist if i >= actual)
+        # Return p-value, lower CI, upper CI
+        return count/iter, lower, upper
+
 
     logger.info("Hipotezis tesztek successfully initialized")
     
@@ -196,56 +243,17 @@ class HipotezisTesztek:
         #TODO CI, p value missing, implement manually
         """
         r =  metrics.matthews_corrcoef(x,y)
-        p = pvalue(x,y, metrics.matthews_corrcoef)
+        p = self.__pvalue(x,y, metrics.matthews_corrcoef)
         #ci = ci()
         return r, p
 
 
-#TODO permutation test ABSTRACT PARENT CLASS
-
-from sklearn.utils import shuffle
-import numpy as np
-
-def permutation(v1,v2):
-  #print('permut')
-  v1 = pd.Series(v1)
-  v2 = pd.Series(v2)
-  data = pd.concat([v1,v2])
-  data = shuffle(data)
-                
-  v1 = resample(data, size=len(v1), replace=False)
-  v2 = resample(data, size=len(v2), replace=False)
-  return v1, v2
-
-def resample(x, size, replace = False):
-  return np.random.choice(x, size=size, replace=replace)
-
-def pvalue(x,y, hypothesis_test, iter = 1000, ci=True, ci_level=95):
-  actual = hypothesis_test(x,y)
-  #print(actual)
-
-  #permute_dist = [phi_coeff_matthews_coeff(permutation(x,y)) for _ in range(iter)] # return value in permutation(x,y) do not works, dont know why
-  permute_dist = []
-  for _ in range(iter):
-    a,b = permutation(x,y)
-    permute_dist.append(hypothesis_test(a,b))
-  
-  #print(permute_dist)
-
-  # Bootstraped [bs] Confidence Interval
-  if ci:
-    statistics = sorted(permute_dist)           
-    # Trim endpoints of resampled CI
-    trim = ((1 - (ci_level/100))/2)
-    endpoints = int(trim*1000)
-    trimmed_ci = statistics[endpoints:-endpoints]
-    lower, upper = min(trimmed_ci), max(trimmed_ci)
-
-  count = sum(1 for i in permute_dist if i >= actual)
-  return count/iter, lower, upper
 
 
-### Metrics
+#########################
+###### Metrics ##########
+#########################
+
 
 def mean(x):
     return x.mean()
@@ -257,6 +265,13 @@ def median_absolute_deviation(x):
     return ss.median_absolute_deviation(x)
 
 
+#######################################
+###### Shape of distribution ##########
+#######################################
+
+#########################
+###### Normality Tests ##
+#########################
 
 def kurtosis(x):
     k = np.round(x.kurtosis(), 3)
@@ -321,7 +336,7 @@ def multivariate_normality_test(x, alpha=0.05):
 
 def normality_test(x, method='shapiro-wilk'):
     """
-    Shapiro-Wilk or Kolmogorov Smirnov test
+    Shapiro-Wilk, Kolmogorov Smirnov test or Multivariate normality test
     Returns tuple (test statistic, p-value)
     """
     #TODO Csináld meg hogy akkor is jó leygen ha toöbb series-t akarok fogadni
@@ -364,7 +379,10 @@ def normality_test(x, method='shapiro-wilk'):
 
 
 
-# OUTLIERS
+#########################
+###### OUTLIERS #########
+#########################
+
 ## UNIVARIATE OUTLIERS
 
 def detect_univariate_outlier_boundary(x):
@@ -466,7 +484,7 @@ if __name__ == '__main__':
     print(df.head())
 
 
-
+    #TODO tesztek felallitasa
 
 
 

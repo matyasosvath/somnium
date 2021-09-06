@@ -172,6 +172,14 @@ class Korrelacio(Assumptions, HipotezisTesztek):
 
 
 
+class Ketcsoport(Assumptions, HipotezisTesztek):
+    def __init__(self):
+
+        self.repeated = False
+
+
+
+
 
 if __name__ == '__main__':
     import pingouin as pg
