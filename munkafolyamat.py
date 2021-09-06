@@ -25,7 +25,7 @@ logger.addHandler(stream_handler)
 from _vizualizacio import *
 from tesztek import *
 from adattisztitas import *
-
+from _writer import Luhmann
 
 ##############################
 ######## ASSUMPTIONS #########
@@ -89,6 +89,8 @@ class Korrelacio(Assumptions, HipotezisTesztek):
 
         self.assumptions = self.test_for_assumptions(self.data, method="correlation")
         self.assumptions['Outliers'] = check_for_multivariate_outliers(self.data)
+
+        self.writer = Luhmann()
 
         logger.info("Korrelacio class successfully initialized")
     

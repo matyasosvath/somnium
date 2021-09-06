@@ -17,7 +17,7 @@ logger = logging.getLogger()
 
 # Saját modulok
 from _vizualizacio import *
-
+from _writer import Luhmann
 
 
 ##############################
@@ -45,7 +45,10 @@ def adattipus(oszlop):
 class HipotezisTesztek:
 
     def __init__(self):
-        pass
+
+        self.writer = Luhmann()
+
+    logger.info("Hipotezis tesztek successfully initialized")
 
     def __permutation(self,v1,v2):
         """
@@ -69,6 +72,9 @@ class HipotezisTesztek:
         return np.random.choice(x, size=size, replace=replace)
 
     def __pvalue(self, x,y, hypothesis_test, iter = 1000, ci=True, ci_level=95):
+        """
+        P-value
+        """
         actual = hypothesis_test(x,y)
         #print(actual)
 
@@ -93,9 +99,6 @@ class HipotezisTesztek:
         # Return p-value, lower CI, upper CI
         return count/iter, lower, upper
 
-
-    logger.info("Hipotezis tesztek successfully initialized")
-    
     # Folytonos-folytonos
     def pearson(self,x,y):
         pearson = pg.corr(x, y, tail='two-sided', method='pearson').round(3)
@@ -103,11 +106,15 @@ class HipotezisTesztek:
 
         pos_neg = 'postively' if r>0 else 'negatively'
 
+        self.writer.write(f'The relationship between {x.name} and {y.name} was assessed.')
         print(f'The relationship between {x.name} and {y.name} was assessed.')
         
         if p <= 0.05:
+
+            self.writer.write(f"A Pearson correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"A Pearson correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
         else:
+            self.writer.write(f"A Pearson correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"A Pearson correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
 
         return r,p, ci95
@@ -124,15 +131,20 @@ class HipotezisTesztek:
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
+        self.writer.write(f'The relationship between {x.name} and {y.name} was assessed.')
         print(f'The relationship between {x.name} and {y.name} was assessed.')
         
         if p <= 0.05:
+            self.writer.write(f"Spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
         else:
+            self.writer.write(f"Spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
 
         return r,p, ci95
         #return pg.corr(x, y, tail='two-sided', method='spearman').round(3)
+
+    # Folytonos-folytonos, de kiugro ertekek eseten
     def biweight_correlation(self, x,y):
         """
         Biweight midcorrelation (robust)
@@ -146,39 +158,41 @@ class HipotezisTesztek:
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
+        self.writer.write(f"The relationship between {x.name} and {y.name} was assessed with biweight midcorrelation (robust).")
         print(f"The relationship between {x.name} and {y.name} was assessed with biweight midcorrelation (robust).")
 
         if p <= 0.05:
+            self.writer.write(f"Biweight midcorrelation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Biweight midcorrelation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
         else:
+            self.writer.write(f"Biweight midcorrelation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Biweight midcorrelation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
 
         return r,p, ci95
-
 
     def percentage_bend_correlation(self,x,y):
         """
         Percentage bend correlation (robust)
 
         """
-        
+
         perc_bend = pg.corr(x, y, method="bicor").round(3)
         n, r,ci95,p, power = perc_bend.values[0]
-
-
 
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
+        self.writer.write(f"The relationship between {x.name} and {y.name} was assessed with Percentage bend correlation (robust).")
         print(f"The relationship between {x.name} and {y.name} was assessed with Percentage bend correlation (robust).")
 
         if p <= 0.05:
+            self.writer.write(f"Percentage bend correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Percentage bend correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
         else:
+            self.writer.write(f"Percentage bend correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Percentage bend correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
 
         return r,p, ci95
-
 
     def shepherd_pi_correlation(self,x,y):
         """
@@ -192,15 +206,17 @@ class HipotezisTesztek:
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
+        self.writer.write(f"The relationship between {x.name} and {y.name} was assessed with Shepherd’s pi correlation (")
         print(f"The relationship between {x.name} and {y.name} was assessed with Shepherd’s pi correlation (")
 
         if p <= 0.05:
+            self.writer.write(f"Shepherd’s pi correlation showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Shepherd’s pi correlation showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
         else:
+            self.writer.write(f"Shepherd’s pi correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Shepherd’s pi correlation (robust) showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
 
         return r,p, ci95
-
 
     def skipped_spearman_correlation(self,x,y):
         """
@@ -215,39 +231,65 @@ class HipotezisTesztek:
         pos_neg = 'postively' if float(r)>0 else 'negatively'
 
         # Report
+        self.writer.write(f"The relationship between {x.name} and {y.name} was assessed with Skipped spearman correlation.")
         print(f"The relationship between {x.name} and {y.name} was assessed with Skipped spearman correlation.")
 
         if p <= 0.05:
+            self.writer.write(f"Skipped spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Skipped spearman correlation test showed that scores among the group of {x.name} and the groupd of {y.name} were {pos_neg} correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
         else:
+            self.writer.write(f"Skipped spearman correlation showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
             print(f"Skipped spearman correlation showed that scores among the group of {x.name} and the groupd of {y.name} were not correlated, r(df)= {r}, p={p} (CI 95%: {ci95}), N={n} ")
 
         return r,p, ci95
 
+    # Folytonos-Ordinalis | Ordinalis-Ordinalis
     def kendall_tau(self, x,y):
         tau_b =  pg.corr(x, y, method="kendall").round(3)
         n, r,ci95,p, power = tau_b.values[0]
         return r, ci95, p
 
+    def spearman_rangkorrelacio(self):
+        """
+        Feljebb implementalva van
+        """
+        pass
+
+    # Folytonos-Nominalis
     def point_biserial_correlation(self, x,y):
         test_stat, p = np.round(ss.pointbiserialr(x, y),4)
         return test_stat, p
 
+    # Ordinalis-Nominalis
     def rank_biserial_correlation(self, x,y):
         raise NotImplementedError
-    
+
+    # Nominalis-Nominalis
     def phi_coeff_matthews_coeff(self, x,y):
         """
         Phi Coefficient/Matthews Correlation Coefficient
-
-        #TODO CI, p value missing, implement manually
         """
         r =  metrics.matthews_corrcoef(x,y)
         p = self.__pvalue(x,y, metrics.matthews_corrcoef)
-        #ci = ci()
         return r, p
 
+    def goodman_kruskal_lambda(self):
+        """
 
+        """
+        raise NotImplementedError
+
+    def cramer_v(self):
+        """
+
+        """
+        raise NotImplementedError
+
+    def csuprov_fele_kontingencia_egyutthato(self):
+        """
+
+        """
+        pass
 
 
 #########################

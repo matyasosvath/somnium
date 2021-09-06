@@ -6,7 +6,7 @@ class Luhmann:
         pass
 
     def write(self, text, mode='a'):
-        with open('disszertacio.txt', mode=mode, encoding="utf-8") as article:
+        with open('disszertacio.md', mode=mode, encoding="utf-8") as article:
             article.write(text)
 
 
@@ -35,5 +35,5 @@ class Luhmann:
 if __name__ == '__main__':
 
     zettel = Luhmann()
-    zettel.write("Tesztelése a generic wiriter functionnek")
+    zettel.write("Tesztelése a generic writer method")
 
