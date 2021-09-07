@@ -36,6 +36,66 @@ def adattipus(oszlop):
     if a > 8:
         return 'ratio-interval'
 
+##############################
+### DESKRIPTIV STATISZTIKA ###
+##############################
+
+## Interval-ratio scale
+def descriptive_interval(col):
+     #TODO: az age kategóriát automatikusan bin-ekre osztani
+     atlag = np.round(col.mean())
+     print(atlag)
+     variancia = np.round(col.var())
+     szoras = np.round(col.std())
+
+     iqr_25 = np.round(col.quantile(0.25))
+     iqr_75 = np.round(col.quantile(0.75))
+     iqr = iqr_75 - iqr_25
+
+     maximum = np.round(col.max())
+     minimum = np.round(col.min())
+
+     leiro_stat = {
+         'atlag': atlag,
+         'variancia': variancia,
+         'szoras': szoras,
+         'iqr': iqr,
+         'max': maximum,
+         'min': minimum
+     }
+     return leiro_stat
+
+ ## Ordinal scale
+
+ def descriptive_ordinal(col):
+     print('ordinal func')
+     ordinal_dict = {}
+     kategoriak_szama = len(col.unique())
+     for kategoria in range(kategoriak_szama):
+         print(kategoria)
+         kategoria_neve = col.unique()[kategoria] # or col.value_counts().index[kategoria]
+         darabszam = col.value_counts()[kategoria]
+         iras(f'A vizsgálati személyek közül a {col.name} csoport tekintetében {darabszam} fő tartozott a {kategoria_neve} csoportba ')
+
+         ordinal_dict[kategoria_neve] = darabszam
+     print(ordinal_dict)
+     return ordinal_dict
+
+ ## Nominal scale
+ def descriptive_nominal(col):
+     print('nominal func \n')
+     ordinal_dict = {}
+     kategoriak_szama = len(col.unique())
+     for kategoria in range(kategoriak_szama):
+         print(kategoria)
+         kategoria_neve = col.unique()[kategoria] # or col.value_counts().index[kategoria]
+         darabszam = col.value_counts()[kategoria]
+         iras(f'A vizsgálati személyek közül a {col.name} csoport tekintetében {darabszam} fő tartozott a {kategoria_neve} csoportba ')
+
+         ordinal_dict[kategoria_neve] = darabszam
+     print(ordinal_dict)
+     return ordinal_dict    
+
 
 #######################
 ### HIPOTEZIS TESZT ###
@@ -93,11 +153,18 @@ class HipotezisTesztek:
             endpoints = int(trim*1000)
             trimmed_ci = statistics[endpoints:-endpoints]
             lower, upper = min(trimmed_ci), max(trimmed_ci)
-        
+
         # Calculate bootrstrapped p-value
         count = sum(1 for i in permute_dist if i >= actual)
         # Return p-value, lower CI, upper CI
         return count/iter, lower, upper
+
+    def __power(self):
+        pass
+
+#####################
+####KORRELACIO#######
+#####################
 
     # Folytonos-folytonos
     def pearson(self,x,y):
@@ -292,6 +359,158 @@ class HipotezisTesztek:
         pass
 
 
+#######################
+### TWO GROUPS ########
+#######################
+
+    def t_test(self,x,y):
+        pass
+
+    def independent_two_sample_t_test(self,x,y):
+        pass
+
+    def one_sample_t_test(self,x,y):
+        pass
+
+    def chi_square(self,x,y):
+        pass
+
+###########################
+### MULTIPLE GROUPS ######
+###########################
+
+    def one_way_anova(self,x,y):
+        pass
+
+    def two_way_anova(self,x,y):
+        pass
+
+    def three_way_anova(self,x,y):
+        pass
+
+    def mann_whitney_u(self,x,y):
+        pass
+
+    def kruskal_wallis(self,x,y):
+        pass
+
+###########################
+### EFFECT SIZE ###########
+###########################
+
+    def effect_size(self):
+        pass
+
+    def cohen_d(self):
+        pass
+
+    # ...
+
+    def prop(self, table: [list, np.ndarray, pd.core.series.Series], method='arr') -> int:
+        """
+        Risk of a particular event (e.g heart attack) happening.
+
+         Input
+             2x2 matrix/table (pandas, numpy)
+             # List: [[90,10],[79,21]] (Not implemented)
+
+                 | Positive  | Negative
+         Group A |     90    |  10
+         Group B |     79    |  21
+
+         Returns
+             One of the called method results.
+        """
+
+         def absolute_risk_reduction():
+             """
+             Absolute Risk Reduction
+
+             C - the proportion of people in the control group with the ailment of interest (illness).
+             T - the proportion in the treatment group.
+
+             Then, ARR = C-T
+             """
+
+             C = table.iloc[0,1]/table.iloc[0].sum() # Negative Outcome / Sum (Group 1)
+             T = table.iloc[1,1]/table.iloc[1].sum()  # Negative Outcome / Sum (Group 2)
+             arr = np.round(abs(C-T), 3)
+             return arr
+
+         def relative_risk_reduction():
+             """
+             Relative Risk Reduction (RRR): Measure the difference in terms of percentages.
+             """
+             return (C-T)/C * 100
+
+         def odds_ratio():
+             pass
+
+
+         def fourth_measure():
+             """
+             4th Measure:
+             The number of people who need to be treated in order to
+             prevent one person from having the ailment of interest.
+             """
+             return 1/arr()
+
+         if method == 'arr':
+             return arr()
+
+         if method == 'rrr':
+             return rrr()
+
+         if method == 'odds_ratio':
+             return odds_ratio()
+
+         if method == 'fourth_measure':
+             return fourth_measure()
+
+############################
+####### POST HOC TESTS #####
+############################
+
+
+
+
+
+
+###########################
+###  REGRESSION ###########
+##########################
+
+    def simple_linear_regression(self,x,y):
+        pass
+
+    def multiple_linear_regression(self,x,y):
+        pass
+
+    def poisson_regression(self,x,y):
+        pass
+
+    def logistic_regression(self,x,y):
+        pass
+
+    def polynomial_regression(self,x,y):
+        pass
+
+    def ridge_regression(self,x,y):
+        pass
+
+    def softmax_regression(self,x,y):
+        pass
+
+
+
+
+
+
+
+
+
+
+
 #########################
 ###### Metrics ##########
 #########################
@@ -305,6 +524,48 @@ def median(x):
 
 def median_absolute_deviation(x):
     return ss.median_absolute_deviation(x)
+
+# def mean(scores): # first moment
+#     return sum(scores)/len(scores)
+
+# def deviation(scores):
+#     # Átlagos eltérés: az egyes adatok számtani átlagtól való abszolút eltéréseinek átlaga.
+#     return np.round(sum(abs(x - mean(scores)) for x in scores) / (len(scores)-1))
+
+# def covariance(x,y):
+#     # Deviations from mean
+#     d_x = x - x.mean()
+#     d_y = y - y.mean()
+
+#     cov = np.dot(d_x,d_y)/x.shape[0] 
+#     return cov
+
+
+# def std(scores): 
+#     return 
+
+# def var(scores): # second moment
+#     pass
+
+
+# def percentilerank(scores, your_score):
+#     count = 0
+#     for score in scores:
+#         if score <= your_score:
+#             count += 1
+#     percentile_rank = 100.0 * count / len(scores)
+#     return percentile_rank
+
+
+# def z_score(scores):
+#     return (scores - scores.mean())/scores.std()
+
+
+# def factorial(x):
+#     if x == 1:
+#         return 1
+#     else:
+#         return x * factorial(x-1)
 
 
 #######################################
@@ -403,14 +664,14 @@ def normality_test(x, method='shapiro-wilk'):
 
     elif method == 'kolmogorov-szmirnov':
         k,p = kolmogorov_szmirnov_teszt(x)
-      
+
         norm_test_dict = {'Normality Test': {'Kolmogorov-Szmirnov': {'Test Statistic': k, 'P-value': p}}}
 
         return norm_test_dict
 
     elif method == 'multivariate':
         hz_test_stat, p = multivariate_normality_test(x)
-        
+
         norm_test_dict = {'Normality Test': {'Henze-Zirkler': {'Test Statistic': hz_test_stat, 'P-value': p}}}
 
         return norm_test_dict
@@ -418,6 +679,13 @@ def normality_test(x, method='shapiro-wilk'):
     else:
         raise ValueError(
             'Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional. Mit keresel itt?')
+
+
+def homogeinity_of_variance(x,y):
+    """
+    Homogeinity of Variance
+    """
+    pass
 
 
 
@@ -529,213 +797,7 @@ if __name__ == '__main__':
     #TODO tesztek felallitasa
 
 
-
-
-
-
-
-
-
-
-
-
-
 ####################### KORÁBBI ELEMZÉSEK
-
-
-# class PermutationTest:
-#         def __init__(self, *data):
-#                 self.data = data
-#                 self.actual = self.test_stat(data)
-
-        # def permutation(self):
-        #         v1, v2 = self.data[0], self.data[1]
-
-        #         # for i in self.data[2:]:
-        #         #         try:
-        #         #                 v = i
-        #         #         except IndexError:
-        #         #                 pass
-
-        #         pool = np.array(self.data).flatten()
-        #         # print(f"'pool':{pool}")
-        #         data = shuffle(pool)
-        #         # print(f'Shuffled Data: {data}')
-                
-        #         v1 = self.resample(data, size=len(v1), replace=False)
-        #         v2 = self.resample(data, size=len(v2), replace=False)
-        #         return v1, v2
-
-        # def resample(self, x, size, replace = False):
-        #          return np.random.choice(x, size=size, replace=replace)
-
-
-        # def pvalue(self, iter = 1000):
-        #         self.permute_dist = [self.test_stat(self.permutation()) for x in range(iter)]
-        #         # print(f' Observed Difference: {self.actual}')
-
-        #         count = sum(1 for i in self.permute_dist if i >= self.actual)
-        #         return count/iter
-
-
-
-
-# class TwoGroups(PermutationTest):
-
-#         def test_stat(self, data):
-#                 v1, v2 = data
-#                 return abs(v1.mean() - v2.mean())
-#                 # return abs(v1.mean() - v2.mean())
-
-
-
-
-
-
-
-
-
-# ##############################
-# ### DESKRIPTIV STATISZTIKA ###
-# ##############################
-
-# def elemszam(adat):
-#     print(adat.shape[0])
-#     return adat.shape[0]
-
-
-
-# # Check for a given parameter in jellemzok.json
-# def check(col, mit_akarok_csekkolni, hol):
-#     with open('minta.json', 'r') as f:
-#         json_object_data = json.load(f)
-#         if mit_akarok_csekkolni in json_object_data[col]:
-#             return True
-
-
-
-# # Check for a given parameter in jellemzok.json
-# def check(col, mit_akarok_csekkolni, hol):
-#     with open('minta.json', 'r') as f:
-#         json_object_data = json.load(f)
-#         if mit_akarok_csekkolni in json_object_data[col]:
-#             return True
-
-
-
-# # Descriptive Statistics
-
-# ## Interval-ratio scale
-# def descriptive_interval(col):
-#     #TODO: az age kategóriát automatikusan bin-ekre osztani
-#     atlag = np.round(col.mean())
-#     print(atlag)
-#     variancia = np.round(col.var())
-#     szoras = np.round(col.std())
-
-#     iqr_25 = np.round(col.quantile(0.25))
-#     iqr_75 = np.round(col.quantile(0.75))
-#     iqr = iqr_75 - iqr_25
-
-#     maximum = np.round(col.max())
-#     minimum = np.round(col.min())
-
-#     leiro_stat = {
-#         'atlag': atlag,
-#         'variancia': variancia,
-#         'szoras': szoras,
-#         'iqr': iqr,
-#         'max': maximum,
-#         'min': minimum
-#     }
-#     return leiro_stat
-
-# ## Ordinal scale
-
-# def descriptive_ordinal(col):
-#     print('ordinal func')
-#     ordinal_dict = {}
-#     kategoriak_szama = len(col.unique())
-#     for kategoria in range(kategoriak_szama):
-#         print(kategoria)
-#         kategoria_neve = col.unique()[kategoria] # or col.value_counts().index[kategoria]
-#         darabszam = col.value_counts()[kategoria]
-#         iras(f'A vizsgálati személyek közül a {col.name} csoport tekintetében {darabszam} fő tartozott a {kategoria_neve} csoportba ')
-
-#         ordinal_dict[kategoria_neve] = darabszam
-#     print(ordinal_dict)
-#     return ordinal_dict
-
-# ## Nominal scale
-# def descriptive_nominal(col):
-#     print('nominal func \n')
-#     ordinal_dict = {}
-#     kategoriak_szama = len(col.unique())
-#     for kategoria in range(kategoriak_szama):
-#         print(kategoria)
-#         kategoria_neve = col.unique()[kategoria] # or col.value_counts().index[kategoria]
-#         darabszam = col.value_counts()[kategoria]
-#         iras(f'A vizsgálati személyek közül a {col.name} csoport tekintetében {darabszam} fő tartozott a {kategoria_neve} csoportba ')
-
-#         ordinal_dict[kategoria_neve] = darabszam
-#     print(ordinal_dict)
-#     return ordinal_dict    
-
-
-
-# #################
-# #################
-# #################
-
-
-
-# def mean(scores): # first moment
-#     return sum(scores)/len(scores)
-
-# def deviation(scores):
-#     # Átlagos eltérés: az egyes adatok számtani átlagtól való abszolút eltéréseinek átlaga.
-#     return np.round(sum(abs(x - mean(scores)) for x in scores) / (len(scores)-1))
-
-# def covariance(x,y):
-#     # Deviations from mean
-#     d_x = x - x.mean()
-#     d_y = y - y.mean()
-
-#     cov = np.dot(d_x,d_y)/x.shape[0] 
-#     return cov
-
-
-# def std(scores): 
-#     return 
-
-# def var(scores): # second moment
-#     pass
-
-
-# def percentilerank(scores, your_score):
-#     count = 0
-#     for score in scores:
-#         if score <= your_score:
-#             count += 1
-#     percentile_rank = 100.0 * count / len(scores)
-#     return percentile_rank
-
-
-# def z_score(scores):
-#     return (scores - scores.mean())/scores.std()
-
-
-# def factorial(x):
-#     if x == 1:
-#         return 1
-#     else:
-#         return x * factorial(x-1)
-
-
-# def permutation(x):
-#     pass
-
-
 
 # class EffectSize:
 #     def __init__(self):
@@ -812,100 +874,6 @@ if __name__ == '__main__':
 
 
 
-# ##############################
-# ### ELOSZLASOK ##############
-# ##############################
-
-
-
-
-
-
-
-
-# ##############################
-# ### ASSUMPTIONS ##############
-# ##############################
-
-
-# # Distribution
-# def distribution(col):
-#     skewness = col.skew()
-#     kurtosis = col.kurtosis()
-#     return skewness, kurtosis
-
-# #!/usr/bin/env python
-
-# import scipy.stats as ss
-# import numpy as np
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# import logging
-# import unittest
-# import pingouin as pg
-
-# # TODO
-# # error handling
-# # variable types
-# # unittests
-
-# def variable_type(x):
-#     pass
-
-
-# def simple_hist(x):
-#     # legyen egy histogram es a normal eloszlas pdf-je
-#     x = pd.DataFrame(x).hist()
-#     plt.savefig('normality_test'.png)
-
-
-
-# def box_whiskers():
-#     pass
-
-
-# def kurtosis(x):
-#     return pd.Series(x).kurtosis()
-
-
-# def skew(x):
-#     return pd.Series(x).skew()
-
-# def normality_test(x, method='shapiro-wilk'):
-#     """
-
-#     Returns tuple (test statistic, p-value)
-#     """
-#     df = len(x) - 1
-
-#     krts = kurtosis(x)
-#     skw = skew(x)
-
-
-#     if method == 'shapiro-wilk':
-#         w, p = np.round(ss.shapiro(x),3)  # test stat, p-value
-#         print('ez jo')
-#         if p >= 0.05:
-#             print(f"The normality of {x.name} (majd oszlopnevet behelyettesiteni) scores was assessed. The Shapiro-Wilk tests indicated that the scores were normally distributed (W({df}))={w}, p={p}.")
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
-#         else:
-#             print(f'The normality of {x.name} scores was assessed. The Shapiro-Wilk tests indicated that the scores were not normally distributed (W({df}))={w}, p={p}.')
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. ")       
-
-#         return (w, p)
-
-#     elif method == 'kolmogorov-szmirnov':
-#         k, p = np.round(ss.kstest(x, 'norm'),3)
-#         if p >= 0.05:
-#             print(f'The normality of {x.name} scores was assessed. The Kolmogorov-Szmirnov tests indicated that the scores were normally distributed (W({df}))={k}, p={p}.')
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
-#         else:
-#             print(f'The normality of {x.name} scores was assessed. The Kolmogorov-Szmirnov tests indicated that the scores were not normally distributed (W({df}))={k}, p={p}.')
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder. ")
-#         return (k, p)
-#     else:
-#         raise ValueError('Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional')
-
 
 # def homogeneity_of_variance(*data):
 #     """
@@ -924,385 +892,6 @@ if __name__ == '__main__':
 #         print(f' The homogeneity of variance assumption was violated (F({df_b},{df_w})= {f}, p={p}).')
 
 #     return f, p
-
-
-
-
-# def normality_test_decorator(x, method='shapiro-wilk'):
-#     """
-#     Maint to by executed as a decorator
-#     Executed a separate function returns tuple (test statistic, p-value)
-
-#     """
-#     df = len(x) - 1
-
-#     krts = kurtosis(x)
-#     skw = skew(x)
-
-
-#     if method == 'shapiro-wilk':
-#         w, p = np.round(ss.shapiro(x),3)  # test stat, p-value
-#         print('ez jo')
-#         if p >= 0.05:
-#             print(f"The normality of {x.name} (majd oszlopnevet behelyettesiteni) scores was assessed. The Shapiro-Wilk tests indicated that the scores were normally distributed (W({df}))={w}, p={p}.")
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
-#         else:
-#             print(f'The normality of {x.name} scores was assessed. The Shapiro-Wilk tests indicated that the scores were not normally distributed (W({df}))={w}, p={p}.')
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. ")
-        
-#         assmp = dict()
-#         assmp['Shapiro-Wilk Test Statistic'] = w
-#         assmp['p-value'] = p         
-
-#         return (w, p)
-
-#     elif method == 'kolmogorov-szmirnov':
-#         k, p = np.round(ss.kstest(x, 'norm'),3)
-#         if p >= 0.05:
-#             print(f'The normality of {x.name} scores was assessed. The Kolmogorov-Szmirnov tests indicated that the scores were normally distributed (W({df}))={k}, p={p}.')
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder.")
-#         else:
-#             print(f'The normality of {x.name} scores was assessed. The Kolmogorov-Szmirnov tests indicated that the scores were not normally distributed (W({df}))={k}, p={p}.')
-#             print(f"The variable's skew is {skw} and kurtosis is {krts}. You can find the histogram of the variable in this folder. ")
-#         return (k, p)
-#     else:
-#         raise ValueError('Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional')
-
-
-
-
-# if __name__ == '__main__':
-#     import unittest
-
-#     np.random.seed(42)
-#     x = pd.Series(np.random.normal(loc=6, scale=5, size=30), name='oszlop_nev1')
-#     y = pd.Series(np.random.normal(loc=10, scale=3, size=30), name='oszlop_nev2')
-#     z = pd.Series(np.random.normal(loc=5, scale=4, size=30), name='oszlop_nev3')
-
-#     print(normality_test(x))
-#     print(normality_test(x, method="kolmogorov-szmirnov"))
-
-#     class TestAssumptions(unittest.TestCase):
-#         def test_normality_test(self):
-#             actual = normality_test(x, method='shapiro-wilk')
-#             expected = (0.9751381874084473, 0.6868011355400085)
-#             self.assertEqual(actual, expected)
-
-#         def test_homogeneity_of_variance_1(self):
-#             actual = homogeneity_of_variance(x, y, z)
-#             self.assertEqual(
-#                 actual, (1.914, 0.154), "OK with homogeneity of variance test!")
-
-#         def test_homogeneity_of_variance_2(self):
-#             actual = homogeneity_of_variance(x, y)
-#             self.assertEqual(
-#                 actual, (3.952, 0.052), "OK homogeneity of variance test!")
-
-
-
-
-
-
-# ##############################
-# ### KÉT CSOPORT ##############
-# ##############################
-
-
-
-# ### Kettő vagy több csoportra ellenőrzése
-# def ketto_vagy_tobb_csoport_ellenorzese(df, groups):
-#     """
-#     ha kettőnél több csoport van -> return true
-#     kettő csoport van ->return False
-#     """
-#     return df[groups].nunique() > 2
-
-
-
-
-# ##############################
-# ### MULTIPLE GROUPS ##########
-# ##############################
-
-
-
-
-# def anova_one_way():
-#     pass
-
-# def welch_f_test():
-#     pass
-
-
-# def kruskal_wallis():
-#     pass
-
-
-
-
-
-# ##############################
-# ### EFFECT SIZE ##########
-# ##############################
-
-
-
-
-
-
-
-
-
-
-
-
-# ##############################
-# ### CONFIDENCE INTERVAL ######
-# ##############################
-
-
-# #!/usr/bin/env python
-
-# from scipy import stats
-# import scipy
-# import pandas as pd
-# import numpy as np
-# import seaborn as sns
-# from sklearn.utils import shuffle
-
-
-# #from descriptive import covariance
-
-
-# class PermutationTest:
-
-#     def __init__(self, *data):
-#         self.data = data        
-#         self.actual = self.test_stat(data)
-
-#     def permutation(self):
-#         data = [np.array(datum, dtype=float) for datum in self.data]
-#         elemszamok = [data[i].shape[0] for i in range(len(data))] # returns list
-#         csoportszam = len(elemszamok)
-
-#         pool = np.concatenate(data, axis=0)
-#         pool = shuffle(pool) # shuffle pool in-place
-
-#         # need list of arrays
-#         data = [self.resample(pool, size=elemszamok[i]) for i in range(csoportszam)]
-#         return data
-
-#     def resample(self, x, size, replace=False):
-#         return np.random.choice(x, size=size, replace=replace)
-
-#     def pvalue(self, iter=1000, ci=True, ci_level=95):
-#         # Permuted sampling distribution
-#         self.permute_dist = [self.test_stat(self.permutation()) for x in range(iter)]
-
-#         # P-value
-#         count = sum(1 for i in self.permute_dist if i >= self.actual)
-#         print(count)
-
-#         #TODO compute confidence interval using your own percentile function
-#         # Bootstraped [bs] Confidence Interval
-#         if ci:
-#             statistics = sorted(self.permute_dist)
-#             #print(statistics)
-#             # Trim endpoints of resampled CI
-#             trim = ((1 - (ci_level/100))/2)
-#             endpoints = int(trim*1000)
-#             trimmed_ci = statistics[endpoints:-endpoints]
-#             lower, upper = min(trimmed_ci), max(trimmed_ci)
-
-
-#         return np.round(count/iter, 3), lower, upper
-
-
-# class DiffTwoMeans(PermutationTest):
-#     """
-#     Significance test for the difference between two groups.
-#     Makes no distributional assertion.
-#     """
-#     def test_stat(self, data):
-#         if len(data) > 2:
-#             raise TypeError(f'In case of more than two groups, test with ANOVA (see there).')
-
-#         v1, v2 = data
-#         return abs(v1.mean() - v2.mean())
-#         # return abs(v1.mean() - v2.mean())
-
-
-
-# #TODO: fix rounding, create more reusable code, more tests
-
-
-# class ConfidenceInterval:
-#     def __init__(self, *data, alpha=0.05, ci_level=.95):
-#         self.data = data
-#         self.alpha = alpha
-#         self.ci_level = ci_level
-
-
-#     def forMean(self, variance='unknown', **kwargs):
-#         """
-#         Confidence Interval for the Mean
-#         Defaults to unknown variance, use t-distribution
-#         """
-#         x = np.array(self.data)
-#         #print(x.size)
-#         #print(x)
-#         if variance == 'unknown':
-#             sem = x.std()/ np.sqrt(x.size)
-#             df = x.size - 1
-#             t_cl = stats.t.interval(self.alpha,df)[1]
-#             #print(sem,df,t_cl)
-#             lower_limit = x.mean() - t_cl * sem
-#             upper_limit = x.mean() + t_cl * sem
-#             #print(np.round(lower_limit,3), np.round(upper_limit,3))
-#             return (np.round(lower_limit,3), np.round(upper_limit,3))
-
-
-#         if variance == 'known':
-#             var = kwargs['var']
-#             sem = var / np.sqrt(x.shape[0])
-#             z_cl = scipy.stats.norm.ppf(ci_level)
-#             lower_limit = x.mean() - z_cl * sem
-#             upper_limit = x.mean() + z_cl * sem
-#             #print(lower, upper)
-#             return (upper_limit, lower_limit)
-
-
-            
-#     def forDifferenceBetweenmeans(self, equal_n = True):
-#         x,y = self.data
-#         x_n, y_n = x.shape[0], y.shape[0]
-#         #print(x,y)
-#         if equal_n:
-#             # Standard error (equal sample size)
-#             mean_diff = x.mean(), y.mean()
-#             mse = (x.var()**2 + y.var()**2)/2
-
-#             SE = np.sqrt(2*mse/x_n)
-#             t_cl = scipy.stats.t.interval(alpha,df)
-#             df = x_n - 1 + y_n - 1
-
-
-#             # Compute CI
-#             lower = mean_diff - t_cl * SE
-#             upper = mean_diff + t_cl * SE
-#             return (lower, upper)
-#         else:
-
-#             SSE = sum((i - x.mean())**2 for i in x) + sum((i - y.mean())**2 for i in y)
-#             df = x_n - 1 + y_n - 1
-
-#             MSE = SSE/df
-
-#             n_h = 2/ (1/x_n + 1/y_n) # harmonic mean
-
-#             mean_diff = x.mean(), y.mean()
-
-#             SE = np.sqrt(2*mse/n_h)
-
-#             t_cl = scipy.stats.t.interval(alpha,df)
-
-#             # Compute CI
-#             lower = mean_diff - t_cl * SE
-#             upper = mean_diff + t_cl * SE
-#             #print(np.round(lower,3), np.round(upper,3))
-#             return (np.round(lower,3), np.round(upper,3))
-
-
-#     def forCorr(self):
-#         """
-#         1. Convert r to z'
-#         2. Compute a confidence interval in terms of z'
-#         3. Convert the confidence interval back to r.
-#         """
-
-#         x,y = self.data
-
-#         r = np.corrcoef(x,y)
-
-#         # Step 1
-#         r_z = np.arctanh(r)
-#         r_z = 0.5 * np.log(1+r/1-r)
-
-#         # Step 2
-#         SE = 1/np.sqrt(x.shape[0]-3)
-
-#         z_ci = stats.norm.ppf(1-self.alpha/2)
-
-#         # Compute CI
-#         lower = r_z - z_ci * SE
-#         upper = r_z + z_ci * SE
-
-#         # Step 3
-#         lower, upper = np.tanh((lower, upper))
-#         return (lower, upper)
-
-
-
-#     def forProp(self,favorable_outcome):
-#         print(self.data)
-#         x = np.array(self.data)
-#         print(x)
-#         p = pd.value_counts(x[0], normalize=True)[favorable_outcome]
-#         n = x[0].shape[0]
-#         print(f'Shape {n}')
-#         SE_p = np.sqrt(p*(1-p)/n)
-
-#         z_ci = stats.norm.ppf(1-self.alpha/2)
-
-#         # Compute CI (+ correction for estimating discrete distribution)
-#         lower = p - z_ci * SE_p - (0.5/n) 
-#         upper = p + z_ci * SE_p + (0.5/n)
-#         return (lower, upper)
-
-
-
-# import unittest
-
-
-# class TestSum(unittest.TestCase):
-
-#     #z_prop = np.random.randint(0, 2, size=30)
-#     #print(f'Prop values {z_prop}')
-
-
-#     #ci_class = ConfidenceInterval(x,y)
-
-#     def test_formean(self):
-#         np.random.seed(42)
-#         x = np.random.randint(5, 15, size=30)
-#         y = np.random.randint(10, 15, size=30)
-#         self.assertEqual(ConfidenceInterval(x).forMean(), (9.703, 9.763), "Should be (9.703, 9.763)")
-
-#     def test_forDifferenceBetweenmeans(self):
-#         np.random.seed(42)
-#         x = np.random.randint(5, 15, size=30)
-#         y = np.random.randint(10, 15, size=30)
-#         self.assertEqual(ConfidenceInterval(x,y).forMean(), (10.864, 10.903), "Should be (10.363, 10.403)")
-
-#     def test_forCorr(self):
-#         pass
-
-
-#     def test_forProp(self):
-#         np.random.seed(42)
-#         z_prop = np.random.randint(0, 2, size=30)
-#         self.assertEqual(ConfidenceInterval(z_prop).forProp(favorable_outcome=0), (0.2714786270876806, 0.6618547062456528), "Soulhd be this")
-
-
-
-
-# if __name__ == '__main__':
-#     pass
-
-# # create workable code from CLI
-
-
-
 
 
 
@@ -1417,32 +1006,6 @@ if __name__ == '__main__':
 # ##############################
 
 
-
-
-
-# #!/usr/bin/env python
-
-
-# # Importing libraries
-# import numpy as np
-# import pandas as pd
-# from scipy.stats import shapiro, kstest
-# # import seaborn as sns
-# # sns.set_theme(style="whitegrid")
-
-# # from viz import box_plot # sajat module
-
-
-
-
-
-
-
-# import numpy as np
-# import pandas as pd
-# from scipy.stats import chi2
-
-
 # class Chi_square:
 # 	def __init__(self):
 # 		pass
@@ -1501,260 +1064,8 @@ if __name__ == '__main__':
 # 		pass
 
 
-# if __name__ == '__main__':
-# 	chi = Chi_square()
-# 	x = chi.one_way_tables([8,9,19,5,8,11])
-# 	print(x)
 
 
-
-
-# # expected value
-
-# for i in df.index[:-1]:
-#     for j in df.columns[:-1]:
-#         # print(df.loc[i,j])
-#         row_total = df.loc['Row Total', j]
-#         col_total = df.loc[i, 'Column Total']
-#         exp_val = (row_total * col_total)/total
-#         # print(ev)
-#         df.loc[i,j] = exp_val.round(3)
-
-
-
-# #!/usr/bin/env python
-
-# from scipy import stats
-# import numpy as np
-# import pandas as pd
-# from sklearn.utils import shuffle
-
-# # My modules
-# from hypothesis import PermutationTest
-
-
- 
-# class Correlation:
-#     """
-#     Computing the correlation of two (X,Y) variables. Hypothesis testing for correlation.
-#     Available methods: Covariance, Pearson correlation, p-value and degrees of freedom.
-#     """
-
-#     def __init__(self, measurement_level='continuous',
-#                     linearity=True, 
-#                     normal_dist=True, 
-#                     outliers=False):
-#         self.measurement_level = measurement_level
-#         self.linearity = linearity
-#         self.normal_dist = normal_dist
-#         self.outliers = outliers
-
-#     def assumptions(self, x,y):
-#         """Assumptions"""
-        
-#         x = np.asarray(x)
-#         y = np.asarray(y)
-        
-#         assert x.shape[0] == y.shape[0]  # Related pairs
-#         if self.measurement_levelurement != 'continuous':         # Continuous variables
-#             raise Exception("Both level of measurement must be continuous.") # raise Exception("Message")
-
-
-#     def covariance(self, x,y):
-#         # Deviations from mean
-#         d_x = x - x.mean()
-#         d_y = y - y.mean()
-
-#         cov = np.dot(d_x,d_y)/x.shape[0] 
-#         return cov
-
-#     def pearson(self, x,y, significance=True):
-#         """Compute the Pearson correlation coefficient for two variables"""
-#         r = self.covariance(x,y)/(x.std() * y.std())
-
-#         # Compute p-value for correlation.
-#         def pvalue(x,y):
-#             t = r*np.sqrt(len(x) + len(y) - 2)/np.sqrt(1 - r**2) # t-statistic
-#             dof = len(x) - 1 + len(y) - 1 # degrees of freedom
-#             pvalue = stats.t.sf(t, dof)*2
-#             return pvalue, dof
-
-#         if significance:
-#             p, dof = pvalue(x,y)
-#             return r, p, dof
-#         else:
-#             return r
-        
-
-#     def spearman(self, x,y, significance=True):
-#         x_rank = pd.Series(x).rank()
-#         y_rank = pd.Series(y).rank()
-
-#         rho = self.pearson(x_rank, y_rank, significance=False)
-
-#         def pvalue(iters=1000):
-#             resample = []
-#             for iter in range(iters):
-#                 #x_rank_shuffled = shuffle(x_rank)
-#                 y_rank_shuffled = shuffle(y_rank)
-#                 resample.append(self.pearson(x_rank, y_rank_shuffled, significance=False))
-
-#             count = sum(1 for i in resample if i >= rho)
-#             return count/iters
-
-#         if significance:
-#             p = pvalue()
-#             return rho, p
-#         else:
-#             return rho
-
-
-    
-# if __name__ == '__main__':
-#     np.random.seed(42)
-#     x = np.random.randint(10,15, size=30)
-#     y = np.random.randint(10,15, size=30)
-
-#     c =  Correlation()
-
-#     r, pvalue, dof  = c.pearson(x,y)
-#     print(r, pvalue, dof)
-#     s_r, s_p = stats.pearsonr(x,y)
-#     print(f'Scipy Pearson r {s_r} and p {s_p}')
-    
-    
-#     print('\n')
-    
-    
-#     r, pvalue  = c.spearman(x,y)
-#     print(f'rho: {r}, p érték: {pvalue}')
-#     precise_rho = pd.Series(x).corr(pd.Series(y), method='spearman')
-
-#     print(f'igazi rho{precise_rho}')
-
-
-
-# # CI
-
-
-# #!/usr/bin/env python
-
-# from scipy.stats import t
-# import numpy as np
-
-
-# # FIX
-# # Unequal sample size automate & calculate sample size
-# # CI for correlation, proportion
-# # Integrate 2 function
-
-# def interval(*variables, ci=0.95, compute = 'mean', sample_size='equal', pop_var = 'unknown'):
-
-#     n1 = variables[0]
-#     try:
-#         n2 = variables[1]
-#     except (ValueError, IndexError):
-#         pass
-
-#     # If the pop standard deviation is known
-#     if pop_var == 'known':
-#         n = len(n1)
-#         sem = std/np.sqrt(n) 
-#         if ci == 0.95:
-#             lower = x.mean() - 1.96* sem
-#             upper = x.mean() + 1.96* sem
-#             return tuple(lower, upper)
-#         if ci == 0.90: # or 99
-#             pass
-#     # If the pop standard deviation is unknown
-#     else:    
-#         if compute == 'mean':
-#             n = len(n1)
-#             m = n1.mean()
-
-#             sem = (n1.std()/np.sqrt(n))
-#             dof = n-1
-
-#             t_cl = t.interval(ci, dof) # return an interval
-#             t_cl = abs(t_cl[1]) # need one value
-#             print(f't_cl is {t_cl}; sem is {sem}')
-
-#             lower = m - t_cl * sem
-#             upper = m + t_cl * sem
-#             return tuple((lower, upper))
-
-#         if compute == 'difference between means':
-
-#             n = len(n1)
-#             # Compute means
-#             m1 = n1.mean()
-#             m2 = n2.mean()
-
-#             # Compute standard error of the difference between means
-#             MSE = n1.std()- n2.std()/2
-#             sem_m1_m2 = np.sqrt((2*MSE)/n)
-
-#             # Degrees of freedom
-#             dof = len(n1)-1 + len(n2) - 1
-
-#             # t-distribution
-#             t_cl = t.interval(ci, dof) # return an interval
-#             t_cl = abs(t_cl[1]) # need one value
-#             # print(f't_cl is {t_cl}; sem is {sem}')
-
-#             m_diff = m1-m2
-#             lower = m_diff - t_cl * sem_m1_m2
-#             upper = m_diff + t_cl * sem_m1_m2
-#             return tuple((lower, upper))
-#         if compute == 'corr':
-#             pass
-#         if compute == 'proportion':
-#             pass
-    
-
-
-
-# def interval(*variables, ci=95, method='bootstrap', iters=1000):
-#     x,y = variables
-#     means = sorted(list((np.mean(np.random.choice(x, size=len(x), replace=True)) for i in range(iters))))
-#     # for i in range(iters):
-#     #     x = np.random.choice(x, size=len(x), replace=True)
-#     #     means.append(x.mean())
-    
-
-#     # Trim endpoints of resampled CI
-#     trim = ((1 - (ci/100))/2)
-#     endpoints = int(trim*1000)
-#     trimmed_ci = means[endpoints:-endpoints]
-#     lower, upper = min(trimmed_ci), max(trimmed_ci)
-
-#     print(trim, endpoints, trimmed_ci, lower, upper)
-
-#     # or 
-#     trimmed_ci = means[25:]
-
-#     return lower, upper
-
-
-
-# if __name__ == '__main__':
-#     np.random.seed(42)
-#     n1 = np.random.randint(3,10, size=25)
-#     n2 = np.random.randint(5,10, size=10)
-
-
-#     lower, upper = interval(n1,n2, ci=95)
-#     print(f'CI Lower {lower}, Upper {upper}, Mean: {n1.mean()}')
-
-
-
-
-
-# ### My t_test package in production
-# import numpy as np
-# import pandas as pd
-# from scipy import stats
-# from scipy.stats import t
 
 
 
@@ -1875,67 +1186,6 @@ if __name__ == '__main__':
 
 
 
-# if __name__ == '__main__':
-# 	np.random.seed(42)
-# 	x = np.random.randint(10,15, size=30)
-# 	y = np.random.randint(10,15, size=30)
-
-# 	r = LinearRegression()
-
-# 	r.linear_regression(x,y)
-
-# 	print('\n')
-# 	print(r.intercept, r.coeff)
-# 	# print(f'P: {t_statistic}, P {pvalue}, CI {ci}')
-
-
-
-
-# #!/usr/bin/env python3
-
-# import numpy as np
-
-
-# # Standard error of the mean
-# def sem(x, *vars, method='one mean'):
-# 	"""
-# 	Compute the estimate of the standard error of the statistic in case of two groups. 
-# 	"""
-
-
-# 	if method == 'one mean':
-# 		return x.var()/np.sqrt(len(x))
-
-# 	if method == 'difference between means':
-# 		y = vars[0]
-# 		mse = (x.var() - y.var())/2 # n is equal the number of scores in each group
-# 		return np.sqrt(2*mse/len(x))
-
-
-# if __name__ == '__main__':
-# 	np.random.seed(42)
-# 	x = np.random.randint(10,15, size=30)
-# 	y = np.random.randint(10,15, size=30)
-
-# 	se = sem(x, method='one mean')
-# 	print(se)
-
-# 	se = sem(x,y, method = 'difference between means')
-# 	print(se)
-
-
-
-# #!/usr/bin/env python
-
-# import numpy as np
-# import pandas as pd
-# import seaborn as sns 
-# from scipy import stats
-# from scipy.stats import t
-
-# import standard_error
-
-# from writer import Writer
 
 
 # class t_test:
@@ -2014,153 +1264,10 @@ if __name__ == '__main__':
 
 
 
-# def main():
-#     n1 = np.array([10,12,13,14,15,13,14,13,12])    # n1 = 5 * np.random.randint(20, size=40)
-#     n2 = np.array([1,2,3,4,5,3,4,3,2])     # n2 = 5 * np.random.randint(5, size=40)
-
-#     t_teszt = t_test()
-#     t_teszt.one_sample(n1,n2)
-
-
-#     n1 = np.array(np.random.randint(low=5,high=15, size=30))    # n1 = 5 * np.random.randint(20, size=40)
-#     n2 = np.array(np.random.randint(low=10, high=15, size=30))     # n2 = 5 * np.random.randint(5, size=40)
-
-#     t_teszt = t_test()
-#     t_teszt.indenpendent_sample(n1,n2)
-
-# if __name__ == "__main__":
-#     main() 
-
-
-
-
-
-
-
-
-
-
 
 # ##############################
 # ### NON-PARAMETRIC ###############
 # ##############################
-
-
-# #!/usr/bin/env python
-
-# from scipy import stats
-# import pandas as pd
-# import numpy as np
-# import seaborn as sns
-# from sklearn.utils import shuffle
-
-
-
-# from descriptive import covariance
-
-
-# class PermutationTest:
-
-#     def __init__(self, *data):
-#         self.data = data
-#         self.actual = self.test_stat(data)
-
-#     def permutation(self):
-
-        
-#         data = [np.array(datum, dtype=float) for datum in self.data]
-#         elemszamok = [data[i].shape[0] for i in range(len(data))] # returns list
-#         csoportszam = len(elemszamok)
-
-
-#         pool = np.concatenate(data, axis=0)
-#         #print(f"'pool':{pool}")
-#         pool = shuffle(pool) # shuffle pool in-place
-#         #print(f'Shuffled Data: {data}')
-
-
-#         # need list of arrays
-#         data = [self.resample(pool, size=elemszamok[i]) for i in range(csoportszam)]
-#         return data
-
-#     def resample(self, x, size, replace=False):
-#         return np.random.choice(x, size=size, replace=replace)
-
-#     def pvalue(self, iter=1000):
-#         self.permute_dist = [self.test_stat(self.permutation()) for x in range(iter)]
-#         #print(self.permute_dist)
-#         count = sum(1 for i in self.permute_dist if i >= self.actual)
-#         return np.round(count/iter, 3)
-
-
-# class DiffTwoMeans(PermutationTest):
-#     """
-#     Significance test for the difference between two groups.
-#     Makes no distributional assertion.
-#     """
-#     def test_stat(self, data):
-#         if len(data) > 2:
-#             raise TypeError(f'In case of more than two groups, test with ANOVA (see there).')
-
-#         v1, v2 = data
-#         return abs(v1.mean() - v2.mean())
-#         # return abs(v1.mean() - v2.mean())
-
-
-# class PermuteCorr(PermutationTest):
-#     '''Testing the significance of r that makes no distributional assumptions.'''
-
-#     def test_stat(self, data):  # Association
-#         x,y = data
-#         test_stat = covariance(x,y)/(x.std() * y.std())
-#         # test_stat = np.corrcoef(x,y)[0][1]
-#         # test_stat = pd.Series(x).corr(pd.Series(y))
-#         return test_stat
-
-
-
-
-
-# class MultiGroup(PermutationTest):
-#     """
-#     ANOVA is used to test differences among means by analyzing variance.
-
-#     Test uses resampling procedure (without making any distributional assumptions).
-
-#     H_0: All X population means are equal (omnibus hypothesis).
-#     H_1: At least one population mean is different from at least one other mean.
-#     """
-#     def test_stat(self, data):
-#         if len(data) <= 2:
-#             raise TypeError(f'In case of two groups, test with t-test (see there).')
-
-#         #data = [np.array(datum, dtype=float) for datum in data]
-
-#         # MSE
-#         # Mean of sample variances
-#         mse = np.mean([data[i].var() for i in range(len(data))])
-
-#         # MSB
-#         # Compute means
-#         # Compute variance of means
-#         # Multiply by n
-#         msb = np.var([data[i].mean() for i in range(len(data))]) * data[0].shape[0]
-
-#         # F-ratio
-#         f = msb/mse
-#         return f
-
-#         # alldata = np.concatenate(data, axis=1)
-
-#         # bign = alldata.shape[axis]
-
-#         # print(alldata, bign)
-#         # print('test')
-
-
-
-
-# #############################
 
 
 # class MannWhitneyU:
@@ -2220,3 +1327,6 @@ if __name__ == '__main__':
 #         if pvalue:
 #             p = pvalue()
 #         return tuple((U, p))
+
+
+
