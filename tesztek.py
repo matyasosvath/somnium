@@ -159,8 +159,21 @@ class HipotezisTesztek:
         # Return p-value, lower CI, upper CI
         return count/iter, lower, upper
 
-    def __power(self):
-        pass
+    def __power(self, x,y, num_runs=101):
+        #x, y = self.data
+        power_count = 0
+
+        for i in range(num_runs):
+            resample_x = np.random.choice(x, len(x), replace=True)
+            resample_y = np.random.choice(y, len(y), replace=True)
+
+            p = self.pvalue()
+
+            if p < 0.05:
+                power_count += 1
+
+            return power_count/num_runs
+
 
 #####################
 ####KORRELACIO#######
@@ -186,10 +199,10 @@ class HipotezisTesztek:
 
         return r,p, ci95
 
-    
+
     def spearman(self,x,y):
         """
-        
+
         Also possible to use this: df['score'].corr(df['grade']) for instance
         """
         spearman = pg.corr(x, y, tail='two-sided', method='spearman').round(3)
@@ -388,8 +401,61 @@ class HipotezisTesztek:
     def three_way_anova(self,x,y):
         pass
 
-    def mann_whitney_u(self,x,y):
-        pass
+    def mann_whitney_u(self,*data, pvalue=True, alternative='two-sided', distribution='different'):
+        """
+        Rank randomization tests for differences in central tendency. Also called Wilcoxon rank-sum test
+        """
+        x, y = data
+
+        if not isinstance(x, pd.core.series.Series):
+            x = pd.Series(x)
+        if not isinstance(y, pd.core.series.Series):
+            y = pd.Series(y)
+
+        n1 = len(x)
+        n2 = len(y)
+        data = pd.concat((x, y)).rank()
+        x, y = data[:n1], data[n1:]
+
+        if distribution == 'different':
+            all_rank_sum = n1*(n1+1)/2  # all rank sum
+            R_1 = sum(x)  # sum rank of group 1
+            R_2 = sum(y)  # or all_rank_sum - R_x
+
+            U1 = R_1 - ((n1*(n1+1))/2)
+            U2 = R_2 - ((n2*(n2+1))/2)
+            U = min(U1, U2)
+
+            Umean = (n1*n2)/2
+            Ustd = np.sqrt(n1*n2*(n1+n2+1)/12)
+
+        elif distribution == 'identical':  # identical distribution
+            x, y = data
+            x_median = pd.Series(x).median()
+            y_median = pd.Series(y).median()
+            # return abs(x_median - y_median) # difference between sum of ranks; two-tailed
+        else:
+            raise Exception('You should specify the distribution parameter. Available parameters: "identical", "different".')
+
+        def pvalue(alternative=alternative):
+            # For ldatae samples, U is approximately normally distributed. In that case, the standardized value equals to
+            z = (U - Umean) / Ustd
+            if alternative == 'two-sided':
+                p = 2*stats.norm.sf(abs(z))
+
+            elif alternative == 'one-sided':
+                p = 1 - stats.norm.cdf(abs(z))
+
+            else:
+                raise Exception('Hypothesis test should be one or two sided.')
+
+            return p
+
+        if pvalue:
+            p = pvalue()
+            return tuple((U, p))
+        else:
+            return tuple(U)
 
     def kruskal_wallis(self,x,y):
         pass
@@ -525,47 +591,43 @@ def median(x):
 def median_absolute_deviation(x):
     return ss.median_absolute_deviation(x)
 
-# def mean(scores): # first moment
-#     return sum(scores)/len(scores)
+def mean(scores): # first moment
+    return sum(scores)/len(scores)
 
-# def deviation(scores):
-#     # Átlagos eltérés: az egyes adatok számtani átlagtól való abszolút eltéréseinek átlaga.
-#     return np.round(sum(abs(x - mean(scores)) for x in scores) / (len(scores)-1))
+def deviation(scores):
+    # Átlagos eltérés: az egyes adatok számtani átlagtól való abszolút eltéréseinek átlaga.
+    return np.round(sum(abs(x - mean(scores)) for x in scores) / (len(scores)-1))
 
-# def covariance(x,y):
-#     # Deviations from mean
-#     d_x = x - x.mean()
-#     d_y = y - y.mean()
+def covariance(x,y):
+    # Deviations from mean
+    d_x = x - x.mean()
+    d_y = y - y.mean()
 
-#     cov = np.dot(d_x,d_y)/x.shape[0] 
-#     return cov
+    cov = np.dot(d_x,d_y)/x.shape[0]
+    return cov
 
+def std(scores):
+    pass
 
-# def std(scores): 
-#     return 
+def var(scores): # second moment
+    pass
 
-# def var(scores): # second moment
-#     pass
+def percentilerank(scores, your_score):
+    count = 0
+    for score in scores:
+        if score <= your_score:
+            count += 1
+    percentile_rank = 100.0 * count / len(scores)
+    return percentile_rank
 
+def z_score(scores):
+    return (scores - scores.mean())/scores.std()
 
-# def percentilerank(scores, your_score):
-#     count = 0
-#     for score in scores:
-#         if score <= your_score:
-#             count += 1
-#     percentile_rank = 100.0 * count / len(scores)
-#     return percentile_rank
-
-
-# def z_score(scores):
-#     return (scores - scores.mean())/scores.std()
-
-
-# def factorial(x):
-#     if x == 1:
-#         return 1
-#     else:
-#         return x * factorial(x-1)
+def factorial(x):
+    if x == 1:
+        return 1
+    else:
+        return x * factorial(x-1)
 
 
 #######################################
@@ -680,14 +742,22 @@ def normality_test(x, method='shapiro-wilk'):
         raise ValueError(
             'Only Shapiro-Wilk and Kolmogorov-Szmirnov are optional. Mit keresel itt?')
 
-
-def homogeinity_of_variance(x,y):
+def homogeneity_of_variance(*data):
     """
-    Homogeinity of Variance
+
+    Returns tuple (test statistic, p-value)
     """
-    pass
+    f, p = np.round(ss.levene(*data), 3)
+    df_b = 0
+    df_w = 0
+    # Pingouin módszere, df, scores, groups
+    #pg.homoscedasticity(data=df_anova, dv=scores, group=groups)
+    if p >= 0.05:
+        print(f"Levene's test for equality of variances is not significant (F({df_b},{df_w})= {f}, p={p}).")
+    else:
+        print(f' The homogeneity of variance assumption was violated (F({df_b},{df_w})= {f}, p={p}).')
 
-
+    return f, p
 
 #########################
 ###### OUTLIERS #########
@@ -798,208 +868,6 @@ if __name__ == '__main__':
 
 
 ####################### KORÁBBI ELEMZÉSEK
-
-# class EffectSize:
-#     def __init__(self):
-#         pass
-
-
-#     def prop(self, table: [list, np.ndarray, pd.core.series.Series], method='arr') -> int:
-#         """
-#         Risk of a particular event (e.g heart attack) happening.
-
-#         Input 
-#             2x2 matrix/table (pandas, numpy)
-#             # List: [[90,10],[79,21]] (Not implemented)
-
-#                 | Positive  | Negative
-#         Group A |     90    |  10
-#         Group B |     79    |  21
-
-#         Returns
-#             One of the called method results.
-#         """
-
-#         def arr():
-#             """
-#             Absolute Risk Reduction 
-    
-#             C - the proportion of people in the control group with the ailment of interest (illness)  
-#             T - the proportion in the treatment group.
-
-#             Then, ARR = C-T
-#             """
-
-#             C = table.iloc[0,1]/table.iloc[0].sum() # Negative Outcome / Sum (Group 1)
-#             T = table.iloc[1,1]/table.iloc[1].sum()  # Negative Outcome / Sum (Group 2)
-#             return np.round(abs(C-T), 3)
-
-#         def rrr():
-#             """
-#             Relative Risk Reduction (RRR)
-            
-#             Measure the difference in terms of percentages.
-
-
-#             """
-#             return (C-T)/C * 100
-
-#         def odds_ratio():
-#             pass
-
-
-#         def fourth_measure():
-#             """
-#             4th Measure:
-#             The number of people who need to be treated in order to
-#             prevent one person from having the ailment of interest.
-#             """
-#             return 1/arr()
-
-#         if method == 'arr':
-#             return arr()
-
-#         if method == 'rrr':
-#             return rrr()
-
-#         if method == 'odds_ratio':
-#             return odds_ratio()
-
-#         if method == 'fourth_measure':
-#             return fourth_measure()
-
-#     def diff_means(self):
-#         pass
- 
-
-
-
-
-# def homogeneity_of_variance(*data):
-#     """
-
-#     Returns tuple (test statistic, p-value)
-#     """
-#     f, p = np.round(ss.levene(*data), 3)
-#     df_b = 0
-#     df_w = 0
-#     # Pingouin módszere, df, scores, groups
-#     #pg.homoscedasticity(data=df_anova, dv=scores, group=groups)
-
-#     if p >= 0.05:
-#         print(f"Levene's test for equality of variances is not significant (F({df_b},{df_w})= {f}, p={p}).")
-#     else:
-#         print(f' The homogeneity of variance assumption was violated (F({df_b},{df_w})= {f}, p={p}).')
-
-#     return f, p
-
-
-
-# ##############################
-# ### POWER ####################
-# ##############################
-
-
-
-# import numpy as np
-# import pandas as pd
-# import sys
-# import unittest
-# from sklearn.utils import shuffle
-
-
-# if len(sys.argv) > 1:
-#     if sys.argv[1] == 'statistical_rigor':
-#         power = sys.argv[1]
-#         alpha = sys.argv[2]
-#         effect_size = sys.argv[3]
-#         sample_size = sys.argv[4]
-#     else:
-#         power = sys.argv[1]  # 0.8
-#         alpha = sys.argv[2]  # 0.05
-#         mean_x = sys.argv[3]
-#         mean_y = sys.argv[4]
-#         sample_size = sys.argv[5]
-
-
-# class PermutationTest:
-
-#     def __init__(self, *data):
-#         self.data = data
-#         self.actual = self.test_stat(data)
-
-#     def permutation(self):
-#         data = [np.array(datum, dtype=float) for datum in self.data]
-#         elemszamok = [data[i].shape[0]
-#                       for i in range(len(data))]  # returns list
-#         csoportszam = len(elemszamok)
-
-#         pool = np.concatenate(data, axis=0)
-#         # print(f"'pool':{pool}")
-#         pool = shuffle(pool)  # shuffle pool in-place
-#         #print(f'Shuffled Data: {data}')
-
-#         # need list of arrays
-#         data = [self.resample(pool, size=elemszamok[i])
-#                 for i in range(csoportszam)]
-#         return data
-
-#     def resample(self, x, size, replace=False):
-#         return np.random.choice(x, size=size, replace=replace)
-
-#     def pvalue(self, iter=1000):
-#         self.permute_dist = [self.test_stat(
-#             self.permutation()) for x in range(iter)]
-#         #print(self.permute_dist)
-#         count = sum(1 for i in self.permute_dist if i >= self.actual)
-#         return np.round(count/iter, 3)
-
-
-# class Power(PermutationTest):
-#     """
-#     Documentation
-#     """
-
-#     def test_stat(self, data, method="mean_difference"):
-#         if method == 'mean_difference':
-#             if len(data) > 2:
-#                 raise TypeError("More than two groups")
-
-#             x, y = data
-#             return abs(x.mean() - y.mean())
-
-#         if method == 'cohen':
-#             pass
-
-#         if method == 'need more tests':
-#             pass
-
-#     def estimate_power(self, num_runs=101):
-#         x, y = self.data
-#         power_count = 0
-
-#         for i in range(num_runs):
-#             resample_x = np.random.choice(x, len(x), replace=True)
-#             resample_y = np.random.choice(y, len(y), replace=True)
-
-#             p = self.pvalue()
-#             if p < 0.05:
-#                 power_count += 1
-#         print('hello')
-#         return power_count/num_runs
-
-
-# if __name__ == '__main__':
-#     x = np.random.randint(10, 15, size=30)
-#     y = np.random.randint(16, 30, size=30)
-
-#     p = Power(x,y)
-#     print(p.pvalue())
-#     print(p.estimate_power())
-    
-
-
-
 
 # ##############################
 # ### PARAMETRIC ###############
