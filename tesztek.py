@@ -840,6 +840,33 @@ def remove_multivariate_outliers(data):
 
 
 
+#####################
+### UNIT TESTS ######
+#####################
+
+import unittest
+
+class TestHypothesisTests(unittest.TestCase):
+
+    def setUp(self) -> None:
+        np.random.seed(42)
+
+        # Test removing multivariate outliers
+        data = {'score': [91, 93, 72, 87, 86, 73, 68, 87, 78, 99, 95, 76, 84, 96, 76, 80, 83, 84, 73, 74],
+            'hours': [16, 6, 3, 1, 2, 3, 2, 5, 2, 5, 2, 3, 4, 3, 3, 3, 4, 3, 4, 4],
+            'prep': [3, 4, 0, 3, 4, 0, 1, 2, 1, 2, 3, 3, 3, 2, 2, 2, 3, 3, 2, 2],
+            'grade': [70, 88, 80, 83, 88, 84, 78, 94, 90, 93, 89, 82, 95, 94, 81, 93, 93, 90, 89, 89]
+            }
+
+        self.data = pd.DataFrame(data)
+        self.hypo = HypothesisTests()
+
+    def test_one(self):
+        pass
+
+    def test_two(self):
+        pass
+
 if __name__ == '__main__':
     import pingouin as pg
     df = pg.read_dataset('penguins')
@@ -1127,74 +1154,5 @@ if __name__ == '__main__':
 #             print('The conclusion is that the population mean for the treatment/experiment condition is higher than the population mean for the control condition.') 
 #         else:
 #             print('The null hypothesis - that the population mean difference score is zero - cannot be rejected.')
-
-
-
-
-
-
-# ##############################
-# ### NON-PARAMETRIC ###############
-# ##############################
-
-
-# class MannWhitneyU:
-#     """
-#     Rank randomization tests for differences in central tendency. Also called Wilcoxon rank-sum test
-#     """
-
-#     def __init__(self):
-#         pass
-
-#     def test_stat(self, *data, pvalue=True, alternative='two-sided', distribution='different'):
-#         x, y = data
-
-#         if not isinstance(x, pd.core.series.Series):
-#             x = pd.Series(x)
-#         if not isinstance(y, pd.core.series.Series):
-#             y = pd.Series(y)
-
-#         n1 = len(x)
-#         n2 = len(y)
-#         data = pd.concat((x, y)).rank()
-#         x, y = data[:n1], data[n1:]
-
-#         if distribution == 'different':
-
-#             all_rank_sum = n1*(n1+1)/2  # all rank sum
-#             R_1 = sum(x)  # sum rank of group 1
-#             R_2 = sum(y)  # or all_rank_sum - R_x
-
-#             U1 = R_1 - ((n1*(n1+1))/2)
-
-#             U2 = R_2 - ((n2*(n2+1))/2)
-#             U = min(U1, U2)
-
-#             Umean = (n1*n2)/2
-#             Ustd = np.sqrt(n1*n2*(n1+n2+1)/12)
-
-#         elif distribution == 'identical':  # identical distribution
-#             x, y = data
-#             x_median = pd.Series(x).median()
-#             y_median = pd.Series(y).median()
-#             # return abs(x_median - y_median) # difference between sum of ranks; two-tailed
-#         else:
-#             raise Exception(
-#                 'You should specify the distribution parameter. Available parameters: "identical", "different".')
-
-#         def pvalue(alternative=alternative):
-#             # For ldatae samples, U is approximately normally distributed. In that case, the standardized value equals to
-#             z = (U - Umean) / Ustd
-#             if alternative == 'two-sided':
-#                 p = 2*stats.norm.sf(abs(z))
-#             elif alternative == 'one-sided':
-#                 p = 1 - stats.norm.cdf(abs(z))
-#             else:
-#                 raise Exception('Hypothesis test should be one or two sided.')
-#             return p
-#         if pvalue:
-#             p = pvalue()
-#         return tuple((U, p))
-
 
 
