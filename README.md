@@ -1,4 +1,8 @@
-# kaizen
+# Black Swan
+
+Statistical program for hypothesis testing and data analysis.
+
+Own mini-pandas
 
 
 formászd át a base permutation class-t, hogy bootstrapp CI-t is adjon a test stat mellé
