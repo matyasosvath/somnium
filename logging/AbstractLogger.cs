@@ -38,7 +38,7 @@ namespace Codecool.MainProduct.Logging
         /// Log <paramref name="message"/> in a safe manner.
         /// </summary>
         /// <param name="level">Severity level.</param>
-        /// <param name="message">MEssage to log.</param>
+        /// <param name="message">Message to log.</param>
         protected abstract void SafeLog(LogLevel level, string message);
 
 
