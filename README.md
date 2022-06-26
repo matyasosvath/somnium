@@ -122,3 +122,29 @@ Inferential Statistics
 
 
 Visualization
+
+
+----
+
+- [ ] unit tests
+- [ ] data viz for tests
+- [ ] ANOVA
+- [ ] create predefined df to add data input
+	- [ ] sys.argv
+	- [ ] read df
+	- [ ] try-expect-finally block
+	- [ ] assertion erorrs
+- [ ] assumptions
+	- [ ] error hadnling
+	- [ ] variable types
+	- [ ] unittest
+- [ ] EPIDEMIOLÓGIAI STATISZTIKA
+- [x] permutation base class
+- [x] write to a .md file
+- [ ] hipotézis tesztek tempalte megírása
+- [ ] tesztek írása
+- [ ] egy indentel beljebb tolni és if statement data types a korrelacio class-hoz
+- [ ] fire cli app
+
+
+
