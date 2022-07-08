@@ -14,7 +14,7 @@ class AbstractLogger(ILogger):
     hides the filtering logic for the different log levels.
     """
 
-    def __init__(self, levels: LogLevel):
+    def __init__(self, levels = LogLevel):
         """
         Initializes a new instance of the AbstractLogger class.
         """

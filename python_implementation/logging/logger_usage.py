@@ -4,6 +4,6 @@ import console_logger
 from log_level import LogLevel as lvl
 
 
-cl = console_logger.ConsoleLogger(lvl)
+logger = console_logger.ConsoleLogger()
 
-cl.log(lvl.INFO, "hello world")
+logger.log(lvl.INFO, "hello world")
