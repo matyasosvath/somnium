@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+from enum import Enum
 from typing import Callable
 from log_level import LogLevel
-from logger_interface import ILogger
+from ilogger import ILogger
 
 
 class AbstractLogger(ILogger):
@@ -12,35 +13,33 @@ class AbstractLogger(ILogger):
     Extending classes should override the {@code safeLog} method which
     hides the filtering logic for the different log levels.
     """
-    _levels = set()
-
 
     def __init__(self, levels: LogLevel):
         """
         Initializes a new instance of the AbstractLogger class.
         """
-        if (levels == null):
+
+        if (levels == None):
             raise ArgumentNullException()
 
-        _levels = set(log_level)
+        self._levels = levels
 
-    def log(level: LogLevel, message: string) -> None:
+    def log(self, level: LogLevel, message: str) -> None:
         """
 
         """
-        with_level(level, _safe_log(level, message))
+        self.__with_level(level, message)
 
 
-    def _safe_log(level: LogLevel, message: string) -> None:
+    def safe_log(self, level: LogLevel, message: str) -> None:
         """
-
+        Log in a safe manner.
         """
         raise NotImplementedError()
 
-    def _with_level(level: LogLevel, func: Callable[[LogLevel, string], None]) -> None:
+    def __with_level(self, level: LogLevel, message: str) -> None:
         """
 
         """
-        if level in _levels:
-            func()
-
+        if level in LogLevel.__members__.values():
+            self.safe_log(level, message)

@@ -9,7 +9,7 @@ class ILogger(metaclass=abc.ABCMeta):
     All applications classes should be using one.
     """
 
-    def log(self, level: LogLevel, message: string) -> None:
+    def log(self, level: LogLevel, message: str) -> None:
         """
         Log a single event.
         The message will be logged only if the given log level is
