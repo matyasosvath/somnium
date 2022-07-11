@@ -22,9 +22,9 @@ logger.addHandler(stream_handler)
 
 
 # Saját modulok
-from _vizualizacio import *
+from old._vizualizacio import *
 from tesztek import *
-from adattisztitas import *
+from old.adattisztitas import *
 from _writer import Luhmann
 
 ##############################
@@ -32,7 +32,7 @@ from _writer import Luhmann
 ##############################
 
 
-class Assumptions:
+class Assumption:
     def __init__(self) -> None:
         pass
 

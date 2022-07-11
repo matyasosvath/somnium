@@ -1,24 +1,29 @@
 
 from __future__ import annotations
+from typing import Iterable, Tuple
+from correlation.test_result import TestResult
 import numpy as np
+
+
 
 class HypothesisTestPermute(object):
 
 	def __init__(self, data):
 		self.n: int
 		self.m: int
-		self.data = data #: tuple[int, int]
-		self.pool #: list[int]
-		self.__test_stats # :list[float]
+		self.data: Tuple[Iterable[int], Iterable[int]] = data
+		self.pool: Iterable[float]
+		self.__test_stats : Iterable[float]
 
-		self.__MakeModel()
-		self.actual = self.TestStatistic(data)
+		self.__make_model()
+		self.actual = self.test_statistic(data)
+
 
 	def __permutate_test_statistics(self, iters):
-		self.__test_stats = [self.TestStatistic(self.__RunModel()) for _ in range(iters)]
+		self.__test_stats = [self.test_statistic(self.__run_model()) for _ in range(iters)]
 
 
-	def PValue(self, iters=1000) -> float:
+	def p_value(self, iters=1000) -> float:
 		"""
 		Calculate p-value.
 		"""
@@ -26,11 +31,14 @@ class HypothesisTestPermute(object):
 		count = sum(1 for x in self.__test_stats if x >= self.actual)
 		return count / iters
 
-	def Confidence(self): raise NotImplementedError()
-	def Power(self): raise NotImplementedError()
 
+	def confidence_interval(self): raise NotImplementedError()
+	def power(self): raise NotImplementedError()
 
-	def __MakeModel(self):
+	def get_test_result(self) -> TestResult:
+		raise NotImplementedError()
+
+	def __make_model(self):
 		"""
 		Creates a pool from the two groups.
 		"""
@@ -38,7 +46,8 @@ class HypothesisTestPermute(object):
 		self.n, self.m = len(group1), len(group2)
 		self.pool = np.hstack((group1, group2))
 
-	def __RunModel(self):
+
+	def __run_model(self):
 		"""
 		Shuffle pool (randomisation).
 		Create two groups (with length of group 1 and 2).
@@ -47,4 +56,8 @@ class HypothesisTestPermute(object):
 		data = self.pool[:self.n], self.pool[self.n:]
 		return data
 
-	def TestStatistic(self, *data): raise NotImplementedError() # 2 groups
+
+	def test_statistic(self, *data): raise NotImplementedError() # 2 groups
+
+	def __clear_cache(self):
+		raise NotImplementedError()
