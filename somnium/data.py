@@ -3,7 +3,7 @@
 from enum import Enum, auto
 
 
-class Data:
+class Variable:
     def __init__(self, values, name=None):
         self.values = values
         self.type = self.get_data_type(values)

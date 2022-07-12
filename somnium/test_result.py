@@ -8,5 +8,5 @@ class TestResult:
     n: int
     test_statistic: float
     p_value: float
-    ci: Tuple[float]
-    power: float
+    #ci: Tuple[float]
+    #power: float

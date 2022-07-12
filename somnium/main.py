@@ -18,4 +18,4 @@ assmp = Assumption()
 
 corr = Correlation(assmp, x,y)
 
-corr.correlate()
+print(corr.correlate())

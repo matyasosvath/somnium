@@ -47,9 +47,9 @@ class Correlation(HypothesisTestPermute, AbstractCorrelation):
         self.test_result = TestResult(
             len(self.pool), 
             self.actual, 
-            self.p_value(),
-            self.confidence_interval(),
-            self.power()
+            self.p_value()
+            #self.confidence_interval(),
+            #self.power()
             )
 
         return self.test_result
@@ -80,7 +80,7 @@ class Correlation(HypothesisTestPermute, AbstractCorrelation):
         """
         
         """
-        pass
+        return f"Correlation result goes here..."
 
 
 

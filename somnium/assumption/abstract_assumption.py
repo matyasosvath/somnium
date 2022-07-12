@@ -5,11 +5,11 @@ from assumption.inormality import INormalityTest
 from assumption.ioutliertest import IOutlierTest
 from test_result import TestResult
 from data import Data
-#from logging. import ILogger
+from ..logging.ilogger import ILogger
 
 
 class AbstractAssumption(INormalityTest, IOutlierTest):
-    def __init__(self, logger=None) -> None:
+    def __init__(self, logger: ILogger=None) -> None:
         
         self.__assumptions: Dict[str, TestResult] = dict()
         self.logger = logger

@@ -35,7 +35,7 @@ class AbstractCorrelation(ICorrelation):
         """
         Kendall's tau-b correlation (for ordinal data).
         """
-        return pg.corr(data1.values, data2.values, method="kendall").round(3)["r"]   
+        return pg.corr(data1.values, data2.values, method="kendall").round(3)["r"][0]
 
     #region Rank based correlations
 
@@ -43,31 +43,31 @@ class AbstractCorrelation(ICorrelation):
         """
         
         """
-        return pg.corr(self, data1, data2, method="spearman").round(3)["r"]
+        return pg.corr(self, data1, data2, method="spearman").round(3)["r"][0]
 
     def shepherd_correlation_coefficient(self, data1: Data, data2: Data) -> TestResult:
         """
         
         """
-        return pg.corr(data1, data2, method="shepherd").round(3)["r"]
+        return pg.corr(data1, data2, method="shepherd").round(3)["r"][0]
     
     def skipped_correlation_coefficient(self, data1: Data, data2: Data) -> TestResult:
         """
         
         """
-        return pg.corr(data1, data2, method="skipped").round(3)["r"]
+        return pg.corr(data1, data2, method="skipped").round(3)["r"][0]
     
     def percentage_bend_correlation_coefficient(self, data1: Data, data2: Data) -> TestResult:
         """
         
         """
-        return pg.corr(data1, data2, method="percbend").round(3)
+        return pg.corr(data1, data2, method="percbend").round(3)["r"][0]
     
     def biweight_midcorrelation_coefficient(self, data1: Data, data2: Data) -> TestResult:
         """
         
         """
-        return pg.corr(data1, data2, method="bicor").round(3)["r"]
+        return pg.corr(data1, data2, method="bicor").round(3)["r"][0]
 
     #endregion
 
@@ -75,7 +75,7 @@ class AbstractCorrelation(ICorrelation):
         """
         
         """
-        return pg.corr(data1.values, data2.values, method="pearson").round(3)["r"]
+        return pg.corr(data1.values, data2.values, method="pearson").round(3)["r"][0]
 
     def pairwise_correlation_coefficient(self, data1: Data, data2: Data) -> TestResult: 
         raise NotImplementedError()
