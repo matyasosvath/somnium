@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from FormatLevel import FormatLevel
+from writer.format_level import FormatLevel
 
 class IWriter:
     def write(self, format_level: FormatLevel , text: str):
