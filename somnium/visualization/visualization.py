@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from typing import Callable, Dict, Set
-from data import Variable
+from variable import Variable
 from visualization.figure_type import FigureType
 from ..logging.ilogger import ILogger
 from abstract_visualization import AbstractVisualization

@@ -2,7 +2,7 @@
 
 from typing import Tuple
 from test_result import TestResult
-from data import Data
+from variable import Data
 
 
 class IOutlierTest(object):

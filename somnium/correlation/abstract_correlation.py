@@ -3,7 +3,7 @@
 
 from typing import List
 from correlation.icorrelation import ICorrelation
-from data import Data
+from variable import Data
 from test_result import TestResult
 
 

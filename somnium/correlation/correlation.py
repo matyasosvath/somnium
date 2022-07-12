@@ -10,7 +10,7 @@ from assumption.assumption import Assumption
 #from logging.console_logger  import ConsoleLogger
 #from logging.ilogger import ILogger
 
-from data import Data
+from variable import Data
 from test_result import TestResult
 
 

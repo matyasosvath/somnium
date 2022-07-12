@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from data import Variable
+from variable import Variable
 from ..logging.ilogger import ILogger
 
 class IVisualize(object):

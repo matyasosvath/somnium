@@ -4,7 +4,7 @@ from typing import Dict
 from assumption.inormality import INormalityTest
 from assumption.ioutliertest import IOutlierTest
 from test_result import TestResult
-from data import Data
+from variable import Data
 from ..logging.ilogger import ILogger
 
 

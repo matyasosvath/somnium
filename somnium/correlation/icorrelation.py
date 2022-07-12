@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from typing import List
-from data import Data
+from variable import Data
 from test_result import TestResult
 
 class ICorrelation(object):
