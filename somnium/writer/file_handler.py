@@ -3,7 +3,7 @@
 import os
 import matplotlib.pyplot as plt
 
-from ..logging.ilogger import ILogger
+#from ..logging.ilogger import ILogger
 
 
 class FileHandler(object):
@@ -13,7 +13,7 @@ class FileHandler(object):
     THESIS_NAME = "thesis.md"
     IMAGES_PATH = os.path.join(PROJECT_ROOT_DIR, "figures")
     
-    def __init__(self, logger: ILogger) -> None:
+    def __init__(self, logger=None) -> None:
 
         self.logger = logger
 
@@ -22,11 +22,11 @@ class FileHandler(object):
 
     def write(self, text, mode='a'):
         with open(
-            self.THESIS_PATH + self.THESIS_NAME, 
+            self.THESIS_PATH + "\\" + self.THESIS_NAME, 
             mode=mode, 
             encoding="utf-8") as thesis:
             
-            thesis.write(text + "\n")
+            thesis.write(text)
     
     def save_figure(self, fig_name, tight_layout=True, 
         fig_extension="png", resolution=300) -> None:
@@ -44,7 +44,4 @@ class FileHandler(object):
         # Save figure
         plt.savefig(path, format=fig_extension, dpi=resolution)
         
-        return None 
-
-
-
+        return None
