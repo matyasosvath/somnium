@@ -53,7 +53,7 @@ class HypothesisTestPermute(object):
         # Trim endpoints of resampled CI
         trim = ((1 - (ci_level/100))/2)
         print(f"Trim: {trim}")
-        endpoints = int(trim*100)
+        endpoints = int(trim*1000)
         print(f"Endpoint: {endpoints}")
         trimmed_ci = sorted_test_statistics[endpoints:-endpoints]
         lower, upper = min(trimmed_ci), max(trimmed_ci)

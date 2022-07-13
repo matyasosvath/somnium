@@ -35,49 +35,38 @@ class AbstractCorrelation(ICorrelation):
         """
         Kendall's tau-b correlation (for ordinal data).
         """
-        return pg.corr(data1.values, data2.values, method="kendall").round(3)["r"][0]
+        return pg.corr(data1.values, data2.values, method="kendall").round(3)
 
     #region Rank based correlations
 
     def spearman_rank_coefficient(self, data1: Variable, data2: Variable) -> Result:
-        """
-        
-        """
-        print(data1.values)
-        print(data2.values)
-        return pg.corr(self, np.array(data1.values), np.array(data2.values), method="spearman").round(3)["r"][0]
+        print(data1)
+        print(type(data1))
+        print(data2)
+        print(type(data2.values))
+        data1 = np.asarray(data1.values)
+        data2 = np.asarray(data2.values)
+        print(data1.ndim)
+        print(data2.ndim)
+
+        return pg.corr(self, data1, data2, method="spearman").round(3)
 
     def shepherd_correlation_coefficient(self, data1: Variable, data2: Variable) -> Result:
-        """
-        
-        """
-        return pg.corr(data1, data2, method="shepherd").round(3)["r"][0]
+        return pg.corr(data1, data2, method="shepherd").round(3)
     
     def skipped_correlation_coefficient(self, data1: Variable, data2: Variable) -> Result:
-        """
-        
-        """
-        return pg.corr(data1, data2, method="skipped").round(3)["r"][0]
+        return pg.corr(data1, data2, method="skipped").round(3)
     
     def percentage_bend_correlation_coefficient(self, data1: Variable, data2: Variable) -> Result:
-        """
-        
-        """
-        return pg.corr(data1, data2, method="percbend").round(3)["r"][0]
+        return pg.corr(data1, data2, method="percbend").round(3)
     
     def biweight_midcorrelation_coefficient(self, data1: Variable, data2: Variable) -> Result:
-        """
-        
-        """
-        return pg.corr(data1, data2, method="bicor").round(3)["r"][0]
+        return pg.corr(data1, data2, method="bicor").round(3)
 
     #endregion
 
     def pearson_coefficient(self, data1: Variable, data2: Variable) -> Result:
-        """
-        
-        """
-        return pg.corr(data1.values, data2.values, method="pearson").round(3)["r"][0]
+        return pg.corr(data1.values, data2.values, method="pearson").round(3)
 
     def pairwise_correlation_coefficient(self, data1: Variable, data2: Variable) -> Result: 
         raise NotImplementedError()
