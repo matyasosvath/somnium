@@ -10,8 +10,8 @@ from assumption.assumption import Assumption
 #from logging.console_logger  import ConsoleLogger
 #from logging.ilogger import ILogger
 
-from variable import Data
-from test_result import TestResult
+from variable import Variable
+from result import Result
 
 
 class Correlation(HypothesisTestPermute, AbstractCorrelation):
@@ -19,7 +19,7 @@ class Correlation(HypothesisTestPermute, AbstractCorrelation):
     
     """
 
-    def __init__(self, assumption: Assumption, *data):
+    def __init__(self, assumption: Assumption, *data: Tuple[Variable]):
         
         super().__init__(data)
 
@@ -27,7 +27,7 @@ class Correlation(HypothesisTestPermute, AbstractCorrelation):
         self.__assumption_result = dict()
         #self.logger = logger
 
-    def correlate(self, remove_outliar=False) -> TestResult:
+    def correlate(self, remove_outliar=False) -> Result:
         """
         Full-process
         1. Remove outliers
@@ -44,24 +44,22 @@ class Correlation(HypothesisTestPermute, AbstractCorrelation):
         #TODO visualize
 
 
-        self.test_result = TestResult(
+        self.test_result = Result(
             len(self.pool), 
             self.actual, 
-            self.p_value()
-            #self.confidence_interval(),
-            #self.power()
+            self.p_value(),
+            self.confidence_interval(),
+            self.power()
             )
 
         return self.test_result
         
 
-    def test_statistic(self, data: Tuple[Data]):
+    def test_statistic(self, data: Tuple[Variable]):
         """
         Correct correlation type test statistic.
         """
         data1, data2 = data
-        data1 = Data(data1)
-        data2 = Data(data2)
 
         if (data1.type == "NOMINAL" and data2.type == "NOMINAL"):
             return self.matthews_coefficient(data1, data2)
@@ -76,7 +74,7 @@ class Correlation(HypothesisTestPermute, AbstractCorrelation):
         else:
             raise ValueError
     
-    def print_result(self):
+    def print_result(self) -> str:
         """
         
         """

@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import Tuple
 
 @dataclass
-class TestResult:
+class Result:
     n: int
     test_statistic: float
     p_value: float
-    #ci: Tuple[float]
-    #power: float
+    ci: Tuple[float]
+    power: float

@@ -1,144 +1,90 @@
 
 from __future__ import annotations
+from tkinter import Variable
 from typing import Iterable, Tuple
-from test_result import TestResult
+from result import Result
 import numpy as np
-
-
 
 class HypothesisTestPermute(object):
 
-	def __init__(self, data):
-		self.n: int
-		self.m: int
-		self.data: Tuple[Iterable[int], Iterable[int]] = data
-		self.pool: Iterable[float]
-		self.__test_stats : Iterable[float]
+    def __init__(self, data: Tuple[Variable]):
+        self.n: int
+        self.m: int
+        self.data: Tuple[Variable] = data
+        self.pool: Iterable[float]
+        self.__test_stats: Iterable[float]
 
-		self.__make_model()
-		self.actual = self.test_statistic(data)
+        self.__make_model()
+        self.actual = self.test_statistic(data)
 
+    def __permutate_test_statistics(self, iters: int):
+        self.__test_stats = [self.test_statistic(self.__run_model()) for _ in range(iters)]
 
-	def __permutate_test_statistics(self, iters):
-		self.__test_stats = [self.test_statistic(self.__run_model()) for _ in range(iters)]
-
-
-	def p_value(self, iters=1000) -> float:
-		"""
-		Calculate p-value.
-		"""
-		self.__permutate_test_statistics(iters)
-
-		count = sum(1 for x in self.__test_stats if x >= self.actual)
-		return count / iters
-
-
-	def confidence_interval(self): raise NotImplementedError()
-	def power(self): raise NotImplementedError()
-
-	def get_test_result(self) -> TestResult:
-		raise NotImplementedError()
-
-	def __make_model(self):
-		"""
-		Creates a pool from the two groups.
-		"""
-		print(self.data)
-		group1, group2 = self.data
-		self.n, self.m = len(group1), len(group2)
-		self.pool = np.hstack((group1, group2))
-
-
-	def __run_model(self):
-		"""
-		Shuffle pool (randomisation).
-		Create two groups (with length of group 1 and 2).
-		"""
-		np.random.shuffle(self.pool)
-		data = self.pool[:self.n], self.pool[self.n:]
-		return data
-
-
-	def test_statistic(self, *data): raise NotImplementedError() # 2 groups
-
-	def __clear_cache(self):
-		raise NotImplementedError()
-
-
-#######################
-### HIPOTEZIS TESZT ###
-#######################
-
-
-class HipotezisTesztek:
-
-    def __init__(self):
-
-        self.writer = Luhmann()
-
-    logger.info("Hipotezis tesztek successfully initialized")
-
-    def __permutation(self,v1,v2):
+    def p_value(self, iters: int = 1000) -> float:
         """
-        Permtutation with two groups
+        Calculate p-value.
         """
-        #print('permut')
-        v1 = pd.Series(v1)
-        v2 = pd.Series(v2)
-        # shuffle groups
-        data = pd.concat([v1,v2])
-        data = shuffle(data)
-        # resample groups
-        v1 = self.__resample(data, size=len(v1), replace=False)
-        v2 = self.__resample(data, size=len(v2), replace=False)
-        return v1, v2
+        self.__permutate_test_statistics(iters)
 
-    def __resample(self, x, size, replace = False):
+        count = 0
+        self.__type_2_error = 0
+        for x in self.__test_stats:
+            if x >= self.actual:
+                count +=1
+            else:
+                self.__type_2_error +=1
+        #count = sum(1 for x in self.__test_stats if x >= self.actual)
+        return count / iters
+
+    def confidence_interval(self, ci_level: float = 0.95) -> Tuple[float]:
         """
-        Bootstrap Resampling
+        Bootstrapped Confidence Interval (CI).
+        
+        It is the interval that encloses the central 90% of the bootstrap 
+        sampling distribution of a sample statistic. 
+
+        More generally, an x% confidence interval around a sample estimate should, 
+        on average, contain similar sample estimates x% of the time 
+        (when a similar sampling procedure is followed).
         """
-        return np.random.choice(x, size=size, replace=replace)
+        
+        sorted_test_statistics = sorted(self.__test_stats)
 
-    def __pvalue(self, x,y, hypothesis_test, iter = 1000, ci=True, ci_level=95):
+        # Trim endpoints of resampled CI
+        trim = ((1 - (ci_level/100))/2)
+        endpoints = int(trim*1000)
+        trimmed_ci = sorted_test_statistics[endpoints:-endpoints]
+        lower, upper = min(trimmed_ci), max(trimmed_ci)
+        return (lower, upper)
+
+    def power(self) -> float:
         """
-        P-value
+        The probability of detecting a given effect size with a given sample size.
         """
-        actual = hypothesis_test(x,y)
-        #print(actual)
+        return 1 - self.__type_2_error
 
-        #permute_dist = [phi_coeff_matthews_coeff(permutation(x,y)) for _ in range(iter)] # return value in permutation(x,y) do not works, dont know why
-        permute_dist = []
-        for _ in range(iter):
-            a,b = self.__permutation(x,y)
-            permute_dist.append(hypothesis_test(a,b))
-        #print(permute_dist)
+    def __make_model(self) -> None:
+        """
+        Creates a pool from the two groups.
+        """
+        print(self.data)
+        group1, group2 = self.data
+        self.n, self.m = group1.N, group2.N
+        self.pool = np.hstack((group1.values, group2.values))
 
-        # Bootstraped [bs] Confidence Interval
-        if ci:
-            statistics = sorted(permute_dist)
-            # Trim endpoints of resampled CI
-            trim = ((1 - (ci_level/100))/2)
-            endpoints = int(trim*1000)
-            trimmed_ci = statistics[endpoints:-endpoints]
-            lower, upper = min(trimmed_ci), max(trimmed_ci)
+    def __run_model(self) -> Variable:
+        """
+        Shuffle pool (randomisation).
+        Create two groups (with length of group 1 and 2).
+        """
+        np.random.shuffle(self.pool)
+        data = Variable(self.pool[:self.n]), Variable(self.pool[self.n:])
+        return data
 
-        # Calculate bootrstrapped p-value
-        count = sum(1 for i in permute_dist if i >= actual)
-        # Return p-value, lower CI, upper CI
-        return count/iter, lower, upper
+    def test_statistic(self, *data: Tuple[Variable]) -> float: 
+        raise NotImplementedError()
 
-    def __power(self, x,y, num_runs=101):
-        #x, y = self.data
-        power_count = 0
 
-        for i in range(num_runs):
-            resample_x = np.random.choice(x, len(x), replace=True)
-            resample_y = np.random.choice(y, len(y), replace=True)
 
-            p = self.pvalue()
-
-            if p < 0.05:
-                power_count += 1
-
-            return power_count/num_runs
-
+if __name__ == '__main__':
+    pass

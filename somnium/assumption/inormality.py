@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from typing import Tuple
-from test_result import TestResult
-from variable import Data
+from result import Result
+from variable import Variable
 
 
 class INormalityTest(object):
@@ -13,11 +13,11 @@ class INormalityTest(object):
     def __init__(self) -> None:
         pass
 
-    def kolmogorov_szmirnov(self, data: Data) -> TestResult:
+    def kolmogorov_szmirnov(self, data: Variable) -> Result:
         raise NotImplementedError()
 
-    def shapiro_wilk(self, data: Data) -> TestResult:
+    def shapiro_wilk(self, data: Variable) -> Result:
         raise NotImplementedError()
 
-    def henze_zirkler(self, *data: Tuple[Data]) -> TestResult:
+    def henze_zirkler(self, *data: Tuple[Variable]) -> Result:
         raise NotImplementedError()
