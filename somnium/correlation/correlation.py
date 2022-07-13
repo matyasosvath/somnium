@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-from argparse import ArgumentError
 from typing import List, Tuple
-from collections.abc import Iterable
 from hypothesistest import HypothesisTestPermute
 from correlation.abstract_correlation import AbstractCorrelation
 from assumption.assumption import Assumption

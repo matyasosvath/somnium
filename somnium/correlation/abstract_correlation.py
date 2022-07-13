@@ -5,7 +5,7 @@ from typing import List
 from correlation.icorrelation import ICorrelation
 from variable import Variable
 from result import Result
-
+import numpy as np
 
 import pingouin as pg
 
@@ -43,7 +43,9 @@ class AbstractCorrelation(ICorrelation):
         """
         
         """
-        return pg.corr(self, data1, data2, method="spearman").round(3)["r"][0]
+        print(data1.values)
+        print(data2.values)
+        return pg.corr(self, np.array(data1.values), np.array(data2.values), method="spearman").round(3)["r"][0]
 
     def shepherd_correlation_coefficient(self, data1: Variable, data2: Variable) -> Result:
         """
