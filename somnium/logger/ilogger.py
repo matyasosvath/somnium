@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python
 
 import abc
-from log_level import LogLevel
+from logger.log_level import LogLevel
 
 class ILogger(metaclass=abc.ABCMeta):
     """
