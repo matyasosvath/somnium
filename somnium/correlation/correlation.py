@@ -63,9 +63,9 @@ class Correlation(AbstractCorrelation): # HypothesisTestPermute
 
             self.assumption.multivariate_normality_test(self.group1.values, self.group2.values)
             if self.assumption.assumptions["multivariate_normality"]["is_normal"] and (self.assumption.assumptions["has_outlier"] is not True):
-                self.result["corr_name"] = "Pearson correlation"
+                self.correlation_name = "Pearson correlation"
                 return self.pearson_coefficient
-            
+            self.correlation_name = "Spearman correlation"
             return self.spearman_rank_coefficient
         else:
             raise ValueError
@@ -82,14 +82,12 @@ class Correlation(AbstractCorrelation): # HypothesisTestPermute
 
     def print_result(self) -> str:
         return f"""
-            {self.result["corr_name"]} was computed to assess the linear relationship
+            {self.correlation_name} was computed to assess the linear relationship
             between {self.group1.name} and {self.group2.name}.
-            
-            {self.group1.name.upper()} show {self.__is_normally_dist()} distribution 
+            {self.group1.name} show {self.__is_normally_dist()} distribution
             (W={self.assumption.assumptions[self.group1.name]["normality"]["test_statistic"]},p={self.assumption.assumptions[self.group1.name]["normality"]["p_value"]}).
-            {self.group2.name.upper()} show {self.__is_normally_dist()} distribution 
+            {self.group2.name} show {self.__is_normally_dist()} distribution
             (W={self.assumption.assumptions[self.group2.name]["normality"]["test_statistic"]},p={self.assumption.assumptions[self.group2.name]["normality"]["p_value"]}).
-            
-            There was {self.__is_statistically_significant()} {self.__is_corr_negative_or_positive()} correlation between the two variables, 
+            There was {self.__is_statistically_significant()} {self.__is_corr_negative_or_positive()} correlation between the two variables,
             r(df) = {self.result["r"][0]}, p = {self.result["p-val"][0]}.
             """

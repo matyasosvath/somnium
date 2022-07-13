@@ -49,7 +49,7 @@ class AbstractCorrelation(ICorrelation):
         print(data1.ndim)
         print(data2.ndim)
 
-        return pg.corr(self, data1, data2, method="spearman").round(3)
+        return pg.corr(data1, data2, method="spearman").round(3)
 
     def shepherd_correlation_coefficient(self, data1: Variable, data2: Variable) -> Result:
         return pg.corr(data1, data2, method="shepherd").round(3)

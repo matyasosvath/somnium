@@ -10,8 +10,8 @@ import logging
 from visualization.ivisualization import IVisualize
 
 
-x = Variable([1,2,2,3,5,6,7,1,4,5])
-y = Variable([1,2,3,4,5,6,7,2,4,4])
+x = Variable([1,2,2,3,5,6,7,1,4,5], name="Test1")
+y = Variable([1,2,3,4,5,6,7,2,4,4], name="Test2")
 
 
 #logger = ConsoleLogger()
