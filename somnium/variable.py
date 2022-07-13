@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Union
 from sklearn.neighbors import VALID_METRICS
 
 
 class Variable(object):
 
-    # Preventing dynamic attribute assignment
+    # Preventing dynamic attribute assignment (https://stackoverflow.com/questions/3603502/prevent-creating-new-attributes-outside-init)
     __slots__ = ['__type', '__N', '__values', '__name']
 
     def __init__(self, values, name=None):
         self.__values = values
-        self.__type = self.get_data_type(values)
+        self.__type = self.__get_data_type(values)
         self.__N = len(values)
         self.__name = name
 
@@ -26,12 +26,12 @@ class Variable(object):
     def N(self): return self.__N
 
     @property    
-    def name(self):
+    def name(self) -> Union[str, None]:
         if self.__name is not None:
-            return self.__name
-        raise ValueError("Name is not specified!")
+            return self.__name        
+        return None
 
-    def get_data_type(self, values):
+    def __get_data_type(self, values):
         """
         Get variable data type.
         """
@@ -53,7 +53,10 @@ class Variable(object):
     def __str__(self):
         return f"{self.values}"
 
-    def __repr__(self):
+    # def __repr__(self):
+    #     return self.values
+    
+    def __call__(self):
         return self.values
 
     # def __setattr__(self, name: str, value) -> None:
@@ -67,16 +70,8 @@ class DataType(Enum):
     CONTINUOUS = auto()
 
 
-
-if __name__ == "__main__":
-    d = Variable([10,1,1,1,1,1], name="test")
-    print(d)
-    print(d.type)
-    #print(d.__type)
-    print(d.N)
-    #d.type = DataType.NOMINAL
-    print(type(d.type))
-    d.random = 5
-    print(f"random: {d.random}")
-    print(d[5])
-    print(d.__dict__)
+# if __name__ == '__main__':
+#     d = Variable([1,2,3,4])
+#     print(d)
+#     print(type(d))
+#     print(d[0] + d[1])
