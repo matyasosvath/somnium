@@ -14,7 +14,6 @@ from result import Result
 
 import numpy as np
 
-
 class Correlation(AbstractCorrelation): # HypothesisTestPermute
     """
     

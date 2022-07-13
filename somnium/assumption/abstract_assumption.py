@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
+<<<<<<< HEAD
 import re
 from typing import Dict, Iterable, Tuple, Union
+=======
+from typing import Dict, Iterable, Union
+>>>>>>> 63c11c95ca77c704eb577151fd217044430c70e8
 from assumption.inormality import INormalityTest
 from assumption.ioutliertest import IOutlierTest
 from result import Result
@@ -10,7 +14,10 @@ from variable import Variable
 
 import pingouin as pg
 import numpy as np
+<<<<<<< HEAD
 import pandas as pd
+=======
+>>>>>>> 63c11c95ca77c704eb577151fd217044430c70e8
 
 class AbstractAssumption(INormalityTest, IOutlierTest):
     def __init__(self, logger = None) -> None:
