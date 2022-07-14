@@ -14,8 +14,6 @@ class Visualize(AbstractVisualization):
         super().__init__(logger, file_handler=file_handler, figure_type=figure_type)
 
     def safe_plot(self, group1: Variable, group2: Variable, figure_type: FigureType) -> None:
-        """
-        """
         if figure_type.SCATTER_PLOT:
             sns.scatterplot(group1.values, group2.values)
         elif figure_type.BAR_PLOT:

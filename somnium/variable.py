@@ -2,7 +2,6 @@
 
 from enum import Enum, auto
 from typing import Any, Union
-from sklearn.neighbors import VALID_METRICS
 
 
 class Variable(object):

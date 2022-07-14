@@ -10,7 +10,7 @@ class Writer(AbstractWriter):
         super().__init__(format_level, file_handler)
     
     def safe_write(self, format_level: FormatLevel, text: str) -> None:
-        self.file_handler.write(format_level, self.format_text(format_level, text))
+        self.file_handler.write(self.format_text(format_level, text))
     
     def format_text(self, format_level: FormatLevel, text: str) -> str:
         if format_level == self.format_level.HEADING:

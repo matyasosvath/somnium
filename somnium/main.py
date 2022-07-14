@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-
-
 from assumption.assumption import Assumption
 from correlation.correlation import Correlation
 #from logging.console_logger import ConsoleLogger
@@ -24,7 +22,7 @@ file_handler = FileHandler()
 vis = Visualize(figure_type, file_handler=file_handler)
 writer = Writer(FormatLevel, file_handler)
 
-corr = Correlation(assmp, vis, writer, x,y)
+corr = Correlation(assmp, vis, writer)
 
-print(corr.correlate())
+print(corr.correlate(x,y))
 print(corr.print_result())

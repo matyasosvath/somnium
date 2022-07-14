@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import imp
 from typing import Callable, Iterable, List, Tuple
 from hypothesistest import HypothesisTestPermute
 from correlation.abstract_correlation import AbstractCorrelation
@@ -8,7 +9,7 @@ from visualization.ivisualization import IVisualize
 from visualization.figure_type import FigureType
 from logger.ilogger import ILogger
 from writer.IWriter import IWriter
-
+from writer.format_level import FormatLevel
 from variable import Variable
 from result import Result
 
@@ -16,33 +17,35 @@ import numpy as np
 
 
 class Correlation(AbstractCorrelation):  # HypothesisTestPermute
-    def __init__(self, assumption: Assumption, visualize: IVisualize, writer: IWriter, group1: Variable, group2: Variable):
-        self.assumption = assumption
-        self.visualization = visualize
-        self.writer = writer
+    def __init__(self, assumption: Assumption, visualize: IVisualize, writer: IWriter, logger: ILogger = None):
+        super().__init__(assumption, visualize, writer, logger)
 
-        self.group1 = group1
-        self.group2 = group2
-        #self.logger = logger
-
-        self.result = dict()
+        self.group1: Variable = None
+        self.group2: Variable = None
+        self.result = None
         self.correlation_name: str = ""
 
-    def correlate(self) -> Result:
+    def correlate(self, group1: Variable, group2: Variable) -> Result:
 
+        self.group1, self.group2 = group1, group2
+        
         # Check normality and outliers
-        self.assumption.check(self.group1.values, self.group1.name)
-        self.assumption.check(self.group2.values, self.group2.name)
+        self.assumption.check(group1.values, group1.name)
+        self.assumption.check(group2.values, group2.name)
 
-        self.visualization.plot(self.group1, self.group2, FigureType.SCATTER_PLOT)  # Plot ( with save plot)
+        # Plot ( with save plot)
+        self.visualization.plot(group1, group2, FigureType.SCATTER_PLOT)
 
         corr = self.__decide_correlation_type()
-        self.result = corr(self.group1, self.group2)
+        self.result = corr(group1.values, group2.values) # Correlation Test
+
+        self.writer.write(FormatLevel.TEXT, self.print_result())
+
         return self.result
 
     def __decide_correlation_type(self) -> Callable:
         """
-        Get correct correlation type based on data type.
+        Get correct correlation type based on data type, normality and (if applicable) outliers.
         """
         if (self.group1.type == "NOMINAL" and self.group2.type == "NOMINAL"):
             return self.matthews_coefficient
@@ -53,7 +56,6 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
         elif ((self.group1.type == "CONTINUOUS" and self.group2.type == "ORDINAL") or (self.group1.type == "ORDINAL" and self.group2.type == "CONTINUOUS")):
             return self.spearman_rank_coefficient
         elif (self.group1.type == "CONTINUOUS" and self.group2.type == "CONTINUOUS"):
-
             self.assumption.multivariate_normality_test(
                 self.group1.values, self.group2.values)
             if self.assumption.assumptions["multivariate_normality"]["is_normal"] and (self.assumption.assumptions["has_outlier"] is not True):
