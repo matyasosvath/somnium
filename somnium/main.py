@@ -2,8 +2,6 @@
 
 from assumption.assumption import Assumption
 from correlation.correlation import Correlation
-from logger.console_logger import ConsoleLogger
-from variable import Variable
 from visualization.figure_type import FigureType
 from visualization.visualization import Visualize
 from writer.Writer import Writer
