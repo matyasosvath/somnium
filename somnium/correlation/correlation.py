@@ -5,7 +5,9 @@ from hypothesistest import HypothesisTestPermute
 from correlation.abstract_correlation import AbstractCorrelation
 from assumption.assumption import Assumption
 from visualization.ivisualization import IVisualize
+from visualization.figure_type import FigureType
 from logger.ilogger import ILogger
+from writer.IWriter import IWriter
 
 from variable import Variable
 from result import Result
@@ -14,17 +16,13 @@ import numpy as np
 
 
 class Correlation(AbstractCorrelation):  # HypothesisTestPermute
-    """
-
-    """
-
-    def __init__(self, assumption: Assumption, visualize: IVisualize,  group1: Variable, group2: Variable):
-        # super().__init__(data)
-        self.group1 = group1
-        self.group2 = group2
-
+    def __init__(self, assumption: Assumption, visualize: IVisualize, writer: IWriter, group1: Variable, group2: Variable):
         self.assumption = assumption
         self.visualization = visualize
+        self.writer = writer
+
+        self.group1 = group1
+        self.group2 = group2
         #self.logger = logger
 
         self.result = dict()
@@ -36,7 +34,7 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
         self.assumption.check(self.group1.values, self.group1.name)
         self.assumption.check(self.group2.values, self.group2.name)
 
-        self.visualization.plot(self.group1, self.group2)  # Plot (save plot)
+        self.visualization.plot(self.group1, self.group2, FigureType.SCATTER_PLOT)  # Plot ( with save plot)
 
         corr = self.__decide_correlation_type()
         self.result = corr(self.group1, self.group2)

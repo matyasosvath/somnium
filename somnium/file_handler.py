@@ -3,7 +3,7 @@
 import os
 import matplotlib.pyplot as plt
 
-#from ..logging.ilogger import ILogger
+from logger.ilogger import ILogger
 
 
 class FileHandler(object):
@@ -32,7 +32,7 @@ class FileHandler(object):
         fig_extension="png", resolution=300) -> None:
         """
         """
-        plt.figure(figsize=(14, 8)) # Figure size
+        #plt.figure(figsize=(14, 8)) # Figure size
         
         path = os.path.join( # Create path
             self.IMAGES_PATH, fig_name + "." + fig_extension

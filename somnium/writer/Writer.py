@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from writer.file_handler import FileHandler
+from file_handler import FileHandler
 from writer.format_level import FormatLevel
 from writer.AbstractWriter import AbstractWriter
 
