@@ -10,7 +10,7 @@ class Variable(object):
     __slots__ = ['__type', '__N', '__values', '__name']
 
     def __init__(self, values, name=None):
-        self.__values = values
+        self.__values = list(values)
         self.__type = self.__get_data_type(values)
         self.__N = len(values)
         self.__name = name

@@ -2,21 +2,33 @@
 
 import pandas as pd
 import numpy as np
+from file_handler import FileHandler
 from variable import Variable
 from typing import Tuple
+import itertools
+
 
 class DataHandler:
-    def __init__(self, name: str) -> None:
-        self.df: pd.DataFrame = self.load_data(name)
+    def __init__(self, file_handler: FileHandler) -> None:
+        self.file_handler  = file_handler
+        self.df: pd.DataFrame = None
 
-    @classmethod
-    def load_data(self, df_name: str, **kwargs):
-        return pd.read_excel(df_name)
+
+    def load_data(self, name:str):
+        self.df = self.file_handler.load_data(name)
+        return self.df
         
-
-    @classmethod
     def create_variable_combination(self) -> Tuple[Tuple[Variable]]:
         """
         Create tuples of variable combinations
         """
-        pass
+        return tuple(itertools.combinations(self.df.columns, 2))
+
+
+
+if __name__ == '__main__':
+    fh = FileHandler()
+    dh = DataHandler(fh)
+    dh.load_data("database.xlsx")
+    combs = dh.create_variable_combination()
+    print(combs)

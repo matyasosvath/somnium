@@ -2,8 +2,8 @@
 
 from enum import Enum
 from typing import Callable
-from log_level import LogLevel
-from ilogger import ILogger
+from logger.log_level import LogLevel
+from logger.ilogger import ILogger
 
 
 class AbstractLogger(ILogger):

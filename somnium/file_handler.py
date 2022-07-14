@@ -2,7 +2,7 @@
 
 import os
 import matplotlib.pyplot as plt
-
+import pandas as pd
 from logger.ilogger import ILogger
 
 
@@ -45,3 +45,7 @@ class FileHandler(object):
         plt.savefig(path, format=fig_extension, dpi=resolution)
         
         return None
+
+    def load_data(self, df_name: str, **kwargs):
+        return pd.read_excel(df_name)
+        

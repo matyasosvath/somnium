@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from typing import Callable
-from log_level import LogLevel
-from abstract_logger import AbstractLogger
+from logger.log_level import LogLevel
+from logger.abstract_logger import AbstractLogger
 import datetime
 
 
