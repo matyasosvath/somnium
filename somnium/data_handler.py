@@ -11,7 +11,9 @@ import itertools
 class DataHandler:
     def __init__(self, file_handler: FileHandler) -> None:
         self.file_handler  = file_handler
+
         self.df: pd.DataFrame = None
+        self.variable_combinations: Tuple[Tuple[Variable]] = None
 
 
     def load_data(self, name:str):
@@ -22,7 +24,8 @@ class DataHandler:
         """
         Create tuples of variable combinations
         """
-        return tuple(itertools.combinations(self.df.columns, 2))
+        self.variable_combinations = tuple(itertools.combinations(self.df.columns, 2))
+        return self.variable_combinations
 
 
 

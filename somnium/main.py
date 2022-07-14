@@ -10,31 +10,27 @@ from writer.Writer import Writer
 from file_handler import FileHandler
 from writer.format_level import FormatLevel
 from data_handler import DataHandler
+from somnium import Somnium
+from logger.ilogger import ILogger
 
-x = Variable([1,2,2,3,5,6,7,1,4,5], name="Test1")
-y = Variable([1,2,3,4,5,6,7,2,4,4], name="Test2")
 
-figure_type = FigureType
-assmp = Assumption()
-file_handler = FileHandler()
-vis = Visualize(figure_type, file_handler=file_handler)
-writer = Writer(FormatLevel, file_handler)
+def main():
+    logger = ILogger()
+    figure_type = FigureType
+    assumption = Assumption()
+    file_handler = FileHandler()
+    data_handler = DataHandler(file_handler)
+    visualization = Visualize(figure_type, file_handler=file_handler)
+    writer = Writer(FormatLevel, file_handler)
 
-corr = Correlation(assmp, vis, writer)
+    correlation = Correlation(assumption, visualization, writer)
 
-print(corr.correlate(x,y))
-print(corr.print_result())
+    somnium = Somnium(assumption, visualization, writer, logger,
+                    file_handler, data_handler, correlation)
 
-fh = FileHandler()
-dh = DataHandler(fh)
-df = dh.load_data("database.xlsx")
-combs = dh.create_variable_combination()
+    somnium.run("database.xlsx")
 
-for comb in combs:
-    x = Variable(df[comb[0]], name=comb[0])
-    y = Variable(df[comb[1]], name=comb[1])
-    print(x, x.name)
-    print(y, y.name)
 
-    print(corr.correlate(x,y))
-    print(corr.print_result())
+
+if __name__ == '__main__':
+    main()
