@@ -3,7 +3,7 @@
 import unittest
 from unittest.mock import patch, mock_open
 
-from file_handler import FileHandler
+from util.file_handler import FileHandler
 
 
 class TestFileHandler(unittest.TestCase):

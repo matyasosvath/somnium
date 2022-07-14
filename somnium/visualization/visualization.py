@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from typing import Callable, Dict, Set
-from file_handler import FileHandler
+from util.file_handler import FileHandler
 from variable import Variable
 from visualization.figure_type import FigureType
 from logger.ilogger import ILogger

@@ -2,7 +2,7 @@
 
 import pandas as pd
 import numpy as np
-from file_handler import FileHandler
+from util.file_handler import FileHandler
 from variable import Variable
 from typing import Tuple
 import itertools

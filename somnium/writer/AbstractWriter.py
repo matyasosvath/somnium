@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from typing import Callable, Set
-from file_handler import FileHandler
+from util.file_handler import FileHandler
 from writer.format_level import FormatLevel
 from writer.IWriter import IWriter
 

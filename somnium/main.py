@@ -5,9 +5,9 @@ from correlation.correlation import Correlation
 from visualization.figure_type import FigureType
 from visualization.visualization import Visualize
 from writer.Writer import Writer
-from file_handler import FileHandler
+from util.file_handler import FileHandler
 from writer.format_level import FormatLevel
-from data_handler import DataHandler
+from util.data_handler import DataHandler
 from somnium import Somnium
 from logger.ilogger import ILogger
 

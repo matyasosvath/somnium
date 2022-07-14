@@ -17,10 +17,10 @@ from visualization.visualization import Visualize
 
 from writer.IWriter import IWriter
 from writer.Writer import Writer
-from file_handler import FileHandler
+from util.file_handler import FileHandler
 from writer.format_level import FormatLevel
 
-from data_handler import DataHandler
+from util.data_handler import DataHandler
 
 
 class Somnium:
