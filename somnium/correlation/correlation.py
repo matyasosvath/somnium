@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import imp
 from typing import Callable, Iterable, List, Tuple
 from hypothesistest import HypothesisTestPermute
 from correlation.abstract_correlation import AbstractCorrelation
@@ -33,7 +32,7 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
         self.assumption.check(group1.values, group1.name)
         self.assumption.check(group2.values, group2.name)
 
-        # Plot ( with save plot)
+        # Plot (with save plot)
         self.visualization.plot(group1, group2, FigureType.SCATTER_PLOT)
 
         corr = self.__decide_correlation_type()
@@ -61,8 +60,9 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
             if self.assumption.assumptions["multivariate_normality"]["is_normal"] and (self.assumption.assumptions["has_outlier"] is not True):
                 self.correlation_name = "Pearson correlation"
                 return self.pearson_coefficient
-            self.correlation_name = "Spearman correlation"
-            return self.spearman_rank_coefficient
+            else:
+                self.correlation_name = "Spearman correlation"
+                return self.spearman_rank_coefficient
         else:
             raise ValueError
 

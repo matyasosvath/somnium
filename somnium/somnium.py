@@ -17,23 +17,17 @@ from visualization.visualization import Visualize
 
 from writer.IWriter import IWriter
 from writer.Writer import Writer
-from util.file_handler import FileHandler
 from writer.format_level import FormatLevel
 
 from util.data_handler import DataHandler
 
 
 class Somnium:
-    def __init__(self, assumption: Assumption, visualize: IVisualize, writer: IWriter, logger: ILogger,
-                file_handler: FileHandler, data_handler: DataHandler, correlation: Correlation
+    def __init__(self, logger: ILogger, data_handler: DataHandler, correlation: Correlation
             ):
         
-        self.assumption = assumption
-        self.visualize = visualize
-        self.writer = writer
         self.logger = logger
         
-        self.file_handler = file_handler
         self.data_handler = data_handler
 
         self.correlation = correlation
@@ -42,9 +36,10 @@ class Somnium:
     def run(self, name: str) -> None:
 
         self.data_handler.load_data(name)
-        self.data_handler.create_variable_combination()
+        self.data_handler.create_variable_combination() 
+        #NOTE: Create util.py, a data_handler feladatán tulnyulik a kombináció képzés
 
-        for combination in self.data_handler.variable_combinations:
+        for combination in self.data_handler.variable_combinations: # (A,B)
             group1 = Variable(self.data_handler.df[combination[0]], name=combination[0])
             group2 = Variable(self.data_handler.df[combination[1]], name=combination[1])
 

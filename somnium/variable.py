@@ -63,14 +63,17 @@ class Variable(object):
     #         raise ValueError("Hello there!")
     #     object.__setattr__(self, name, value)
 
+
+
+
 class DataType(Enum):
     NOMINAL = auto()
     ORDINAL = auto()
     CONTINUOUS = auto()
 
 
-# if __name__ == '__main__':
-#     d = Variable([1,2,3,4])
-#     print(d)
-#     print(type(d))
-#     print(d[0] + d[1])
+if __name__ == '__main__':
+    d = Variable([1,2,3,4])
+    print(d)
+    print(type(d))
+    print(d[0] + d[1])

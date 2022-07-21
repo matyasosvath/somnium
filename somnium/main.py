@@ -13,6 +13,8 @@ from logger.ilogger import ILogger
 
 
 def main():
+    # NOTE: Somnium-nak lehetne példányosítani valamennyi részét. 
+    # Szükség van-e ezeketre a függőségekre?
     logger = ILogger()
     figure_type = FigureType
     assumption = Assumption()
@@ -23,8 +25,9 @@ def main():
 
     correlation = Correlation(assumption, visualization, writer)
 
-    somnium = Somnium(assumption, visualization, writer, logger,
-                    file_handler, data_handler, correlation)
+    somnium = Somnium(logger, data_handler, correlation) 
+    # NOTE: A somniumnak kellene-e példányosítani a correlation classt? 
+    # Mert a main nem csinál semmit vele, nem ad hozzá semmit.
 
     somnium.run("database.xlsx")
 

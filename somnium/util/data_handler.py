@@ -19,13 +19,14 @@ class DataHandler:
     def load_data(self, name:str):
         self.df = self.file_handler.load_data(name)
         return self.df
-        
+    
+    #NOTE: ide való??
     def create_variable_combination(self) -> Tuple[Tuple[Variable]]:
         """
         Create tuples of variable combinations
         """
         self.variable_combinations = tuple(itertools.combinations(self.df.columns, 2))
-        return self.variable_combinations
+        return self.variable_combinations # ((A,B), (B,C), (A,C))
 
 
 
