@@ -36,7 +36,7 @@ class Somnium:
     def run(self, name: str) -> None:
 
         self.data_handler.load_data(name)
-        self.data_handler.create_variable_combination() 
+        self.data_handler.create_variable_combination()
         #NOTE: Create util.py, a data_handler feladatán tulnyulik a kombináció képzés
 
         for combination in self.data_handler.variable_combinations: # (A,B)

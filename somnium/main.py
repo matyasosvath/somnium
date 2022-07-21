@@ -22,6 +22,7 @@ def main():
     data_handler = DataHandler(file_handler)
     visualization = Visualize(figure_type, file_handler=file_handler)
     writer = Writer(FormatLevel, file_handler)
+    #NOTE: dependency injection container?
 
     correlation = Correlation(assumption, visualization, writer)
 

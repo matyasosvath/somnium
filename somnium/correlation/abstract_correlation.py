@@ -78,7 +78,9 @@ class AbstractCorrelation(ICorrelation):
     def pairwise_correlation_coefficient(self, data1: Iterable[float], data2: Iterable[float]) -> Result: 
         raise NotImplementedError()
 
-    
+"""
+ICoefficient -> Person Coefficient implementálja (osztály), egy metódus a korreláció
+"""
 
 
 

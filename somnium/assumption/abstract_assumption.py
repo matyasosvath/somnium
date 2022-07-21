@@ -60,7 +60,7 @@ class AbstractAssumption(INormalityTest, IOutlierTest):
     def standardize(self, data: Iterable[float]) -> Dict[str, Union[float,bool]]:
         raise NotImplementedError()
     
-    def check(self, data: Variable, name: str = None, standardize=False) -> None:
+    def evaluate(self, data: Variable, name: str = None, standardize=False) -> None:
         """
         Check all assumptions and return dictionary.
         """

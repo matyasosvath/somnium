@@ -29,13 +29,13 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
         self.group1, self.group2 = group1, group2
         
         # Check normality and outliers
-        self.assumption.check(group1.values, group1.name)
-        self.assumption.check(group2.values, group2.name)
+        self.assumption.evaluate(group1.values, group1.name)
+        self.assumption.evaluate(group2.values, group2.name)
 
         # Plot (with save plot)
         self.visualization.plot(group1, group2, FigureType.SCATTER_PLOT)
 
-        corr = self.__decide_correlation_type()
+        corr = self.__decide_correlation_type() # corr.correlate() -> metódus belcsomagolva egy osztályba és ezen az osztályon belül lenne
         self.result = corr(group1.values, group2.values) # Correlation Test
 
         self.writer.write(FormatLevel.TEXT, self.print_result())
@@ -45,6 +45,8 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
     def __decide_correlation_type(self) -> Callable:
         """
         Get correct correlation type based on data type, normality and (if applicable) outliers.
+
+        Inherent complexity -> nem lehet tovább bontani! Nem nyerek vele semmit ebben az értelemben.
         """
         if (self.group1.type == "NOMINAL" and self.group2.type == "NOMINAL"):
             return self.matthews_coefficient
@@ -98,3 +100,18 @@ class Correlation(AbstractCorrelation):  # HypothesisTestPermute
             """
 
     # endregion
+
+
+
+"""
+IOutput interface
+gerneate output metódus
+
+graphoutput, thesisoutput
+
+korreláció csak generálja az ouptutokat, haladjon végig a lehetőségeken, egy listán
+
+ha ell később egy excel output
+
+
+"""
