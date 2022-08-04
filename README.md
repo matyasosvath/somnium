@@ -1,3 +1,3 @@
-# Somnium,  Black Swan/==Királycsel==/ Kaizen/SigeX
+# Somnium
 
 Statistical program for hypothesis testing and data analysis.
